@@ -2,16 +2,25 @@
 
 This repository contains code & notebooks for different approaches to training multi-language vaccine sentiment models.
 
-## Raw datasets
+## Datasets
 
 | Name          | Description           | Num examples  | Lang |
 | ------------- | --------------------- | ------------- | ---- |
-| `cb-stream-en` | Stream (06/2017 - now) Keywords: "vaccine", "vaccination", "vaxxer", "vaxxed", "vaccinated", "vaccinating", "vacine", "overvaccinate", "undervaccinate", "unvaccinated" | 16.7M | en |
-| `cb-stream-pt` | Stream (09/2018 - now) Keywords: "vacina", "vacinação", "vacinado", "vacinar", "vacinal" | 7.3M | pt |
-| `cb-stream-de` | Stream (09/2019 - now) Keywords: "impf", "impfung", "geimpft" | 80k | de |
-| `cb-stream-fr` | Stream (09/2019 - now) Keywords: "vaccin", "vaccination", "vacciné" | 250k | fr |
-| `cb-stream-it` | Stream (09/2019 - now) Keywords: "vaccino", "vaccinazione", "vaccinato" | 154k | it |
-| `cb-stream-es` | Stream (09/2019 - now) Keywords: "vacuna", "vacunación", "vacunado", "vacunado" | 977k | es |
+| `cb-en` | Stream (06/2017 - now) Keywords: "vaccine", "vaccination", "vaxxer", "vaxxed", "vaccinated", "vaccinating", "vacine", "overvaccinate", "undervaccinate", "unvaccinated" | 16.7M | en |
+| `cb-pt` | Stream (09/2018 - now) Keywords: "vacina", "vacinação", "vacinado", "vacinar", "vacinal" | 7.3M | pt |
+| `cb-de` | Stream (09/2019 - now) Keywords: "impf", "impfung", "geimpft" | 80k | de |
+| `cb-fr` | Stream (09/2019 - now) Keywords: "vaccin", "vaccination", "vacciné" | 250k | fr |
+| `cb-it` | Stream (09/2019 - now) Keywords: "vaccino", "vaccinazione", "vaccinato" | 154k | it |
+| `cb-es` | Stream (09/2019 - now) Keywords: "vacuna", "vacunación", "vacunado", "vacunado" | 977k | es |
+
+## Translated  datasets
+| `cb-en-fr` | Translated from `cb-en-sample`  | 10k | en | fr |
+| `cb-en-es` | Translated from `cb-en-sample` | 10k | en | es |
+| `cb-en-pt` | Translated from `cb-en-sample` | 10k | en | pt |
+| `cb-en-pl` | Translated from `cb-en-sample` | 10k | en | pt |
+| `cb-en-de` | Translated from `cb-en-sample` | 10k | en | de |
+| `cb-en-no` | Translated from `cb-en-sample` | 10k | en | no |
+
 
 ## Annotation datasets
 
@@ -45,8 +54,8 @@ This repository contains code & notebooks for different approaches to training m
 
 | Name          | Description           | Num examples  | Lang |
 | ------------- | --------------------- | ------------- | ---- |
-| `cb-stream-en` | Min 3 tokens; contains-keywords; no duplicate  | 4.8M | en |
-| `cb-stream-en-sample` | Min 3 tokens; contains-keywords; no duplicate; sampled from `cb-stream-en`  | 100k | en |
+| `cb-en` | Min 3 tokens; contains-keywords; no duplicate  | 4.8M | en |
+| `cb-en-sample` | Min 3 tokens; contains-keywords; no duplicate; sampled from `cb-en`  | 100k | en |
 | `lshtm` | Mix of news articles and tweets   | ? | en |
 
 
