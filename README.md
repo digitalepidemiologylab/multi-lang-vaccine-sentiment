@@ -19,7 +19,9 @@ This repository contains code & notebooks for different approaches to training m
 | ------------- | --------------------- | ------------- | ---- |
 | `cb-annot-en-original` | Classes: Positive, neutral, negative; 3-fold; unanimous; | 12.6k | en |
 | `cb-annot-en` | Cleaned/deduplicated version of `cb-annot-en-original` | 10k | en |
+| `cb-annot-en-sm` | Sampled from `cb-annot-en` | 5k | en |
 | `cb-annot-pt` | Classes: Positive, neutral, negative; 3-fold; unanimous; is-relevant;  | 1.4k | pt |
+
 
 ## Translated annotation datasets
 
@@ -31,6 +33,13 @@ This repository contains code & notebooks for different approaches to training m
 | `cb-annot-en-it` | Translated from `cb-annot-en` | 10k | en | it |
 | `cb-annot-en-de` | Translated from `cb-annot-en` | 10k | en | de |
 | `cb-annot-en-no` | Translated from `cb-annot-en` | 10k | en | no |
+| `cb-annot-en-fr-sm` | Translated from `cb-annot-en`  | 5k | en | fr |
+| `cb-annot-en-es-sm` | Translated from `cb-annot-en` | 5k | en | es |
+| `cb-annot-en-pt-sm` | Translated from `cb-annot-en` | 5k | en | pt |
+| `cb-annot-en-it-sm` | Translated from `cb-annot-en` | 5k | en | it |
+| `cb-annot-en-de-sm` | Translated from `cb-annot-en` | 5k | en | de |
+| `cb-annot-en-no-sm` | Translated from `cb-annot-en` | 5k | en | no |
+
 
 ## Domain-specific pretraining datasets
 
