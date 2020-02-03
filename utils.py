@@ -66,10 +66,11 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
     if metrics is None:
         metrics = ['accuracy', 'precision', 'recall', 'f1']
     scores = {}
-    labels = sorted(np.unique(y_true))
-    # label_mapping = {v: k for k, v in label_mapping.items()}
-
-
+    if label_mapping is None:
+        # infer labels from data
+        labels = sorted(list(set(y_true + y_pred)))
+    else:
+        labels = sorted(list(label_mapping.values()))
     if len(labels) <= 2:
         # binary classification
         averaging += ['binary']
