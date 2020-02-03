@@ -48,6 +48,6 @@ This repository contains code & notebooks for different approaches to training m
 
 | Name          | Description | Pre-trained model | Domain pre-training | Classifier training | Accuracy | F1-macro |
 | ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- |
-| `model-b1` | - | `bert-large-uncased`  | ? | `cb-annot-en` | 89% | ? |
-| `model-b2` | - | `bert-base-multilingual-uncased`  | ? | `cb-annot-en` | 84% | ? |
+| `model-b1` | - | `bert-large-uncased`  | - | `cb-annot-en` | 89% | ? |
+| `model-b2` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | 84% | ? |
 | `model-b3` | - | `bert-large-uncased` | `lshtm` | `cb-annot-en` | 92% | ? |
