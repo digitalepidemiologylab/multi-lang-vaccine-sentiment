@@ -16,10 +16,9 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
     label_mapping (dict): Maps integers to label names
 
     Returns:
-    int:Returning value
+    scores (dict): Performance metrics
 
-
-
+    -------------------------------------------------------
     Example usage:
 
     y_true  = [0,1,1,2,1]
@@ -48,8 +47,6 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
          'recall_positive': 1.0,
          'recall_weighted': 0.8
      }
-
-
     """
 
     def _compute_performance_metric(scoring_function, m, y_true, y_pred):
