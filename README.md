@@ -14,6 +14,8 @@ This repository contains code & notebooks for different approaches to training m
 | `cb-es` | Stream (09/2019 - now) Keywords: "vacuna", "vacunación", "vacunado", "vacunado" | 977k | es |
 
 ## Translated  datasets
+| Name          | Description           | Num examples  | Source lang | Target lang |
+| ------------- | --------------------- | ------------- | ---- |  ---- |
 | `cb-en-fr` | Translated from `cb-en-sample`  | 10k | en | fr |
 | `cb-en-es` | Translated from `cb-en-sample` | 10k | en | es |
 | `cb-en-pt` | Translated from `cb-en-sample` | 10k | en | pt |
