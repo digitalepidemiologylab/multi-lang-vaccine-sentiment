@@ -18,10 +18,7 @@ This repository contains code & notebooks for different approaches to training m
 | ------------- | --------------------- | ------------- | ---- |  ---- |
 | `cb-en-fr` | Translated from `cb-en-sample`  | 10k | en | fr |
 | `cb-en-es` | Translated from `cb-en-sample` | 10k | en | es |
-| `cb-en-pt` | Translated from `cb-en-sample` | 10k | en | pt |
-| `cb-en-pl` | Translated from `cb-en-sample` | 10k | en | pt |
 | `cb-en-de` | Translated from `cb-en-sample` | 10k | en | de |
-| `cb-en-no` | Translated from `cb-en-sample` | 10k | en | no |
 
 
 ## Annotation datasets
