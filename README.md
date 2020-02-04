@@ -41,12 +41,16 @@ This repository contains code & notebooks for different approaches to training m
 | `cb-annot-en-it` | Translated from `cb-annot-en` | 10k | en | it |
 | `cb-annot-en-de` | Translated from `cb-annot-en` | 10k | en | de |
 | `cb-annot-en-no` | Translated from `cb-annot-en` | 10k | en | no |
+| `cb-annot-en-de-fr-es` | Translated from `cb-annot-en` | 50k | en | no |
+
+`cb-annot-en-de-fr-es`
 | `cb-annot-en-fr-sm` | Translated from `cb-annot-en`  | 5k | en | fr |
 | `cb-annot-en-es-sm` | Translated from `cb-annot-en` | 5k | en | es |
 | `cb-annot-en-pt-sm` | Translated from `cb-annot-en` | 5k | en | pt |
 | `cb-annot-en-it-sm` | Translated from `cb-annot-en` | 5k | en | it |
 | `cb-annot-en-de-sm` | Translated from `cb-annot-en` | 5k | en | de |
 | `cb-annot-en-no-sm` | Translated from `cb-annot-en` | 5k | en | no |
+| `cb-annot-en-de-fr-es-sm` | Translated from `cb-annot-en` | 30k | en | no |
 
 
 ## Domain-specific pretraining datasets
@@ -80,4 +84,6 @@ This repository contains code & notebooks for different approaches to training m
 
 | Experiment name | Description | Pre-trained model | Domain pre-training | Classifier training | Evaluation dataset | Accuracy | F1-macro |
 | ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- | -------- |
+| `zeroshot-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | `cb-annot-de` | - | - |
 | `translated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de` | `cb-annot-de` | - | - |
+| `multitranslated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de-fr-es` | `cb-annot-de` | - | - |
