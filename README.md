@@ -63,8 +63,8 @@ This repository contains code & notebooks for different approaches to training m
 
 ### English baseline results
 
-| Name          | Description | Pre-trained model | Domain pre-training | Classifier training | Accuracy | F1-macro |
+| Experiment name          | Description | Pre-trained model | Domain pre-training | Classifier training | Accuracy | F1-macro |
 | ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- |
-| `model-b1` | - | `bert-large-uncased`  | - | `cb-annot-en` | 89.1% | ? |
-| `model-b2` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | 84% | ? |
-| `model-b3` | - | `bert-large-uncased` | `lshtm` | `cb-annot-en` | 92% | ? |
+| ? | - | `bert-large-uncased`  | - | `cb-annot-en` | 89.1% | ? |
+| ? | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | 84% | ? |
+| ? | - | `bert-large-uncased` | `lshtm` | `cb-annot-en` | 92% | ? |
