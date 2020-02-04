@@ -65,6 +65,19 @@ This repository contains code & notebooks for different approaches to training m
 
 | Experiment name          | Description | Pre-trained model | Domain pre-training | Classifier training | Accuracy | F1-macro |
 | ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- |
-| ? | - | `bert-large-uncased`  | - | `cb-annot-en` | 89.1% | ? |
-| ? | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | 84% | ? |
-| ? | - | `bert-large-uncased` | `lshtm` | `cb-annot-en` | 92% | ? |
+| - | - | `bert-large-uncased`  | - | `cb-annot-en` | 89.1% | ? |
+| - | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | 84% | ? |
+| - | - | `bert-large-uncased` | `lshtm` | `cb-annot-en` | 92% | ? |
+
+### Zero shot results
+
+| Experiment name | Description | Pre-trained model | Domain pre-training | Classifier training | Evaluation dataset | Accuracy | F1-macro |
+| ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- | -------- |
+| `zero-shot-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | `cb-annot-de` | - | - |
+
+
+### Translated datasets results
+
+| Experiment name | Description | Pre-trained model | Domain pre-training | Classifier training | Evaluation dataset | Accuracy | F1-macro |
+| ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- | -------- |
+| `translated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de` | `cb-annot-de` | - | - |
