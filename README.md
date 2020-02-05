@@ -96,5 +96,6 @@ This repository contains code & notebooks for different approaches to training m
 | negative	| 423	| 7.05%| 
 | 	| 6000	| 100%| 
 
-###The cost of doing annotations
+
+### The cost of doing annotations
 ![Image of Cost Pyramid](https://raw.githubusercontent.com/salathegroup/multi-lang-vaccine-sentiment/master/static/pyramid.png)
