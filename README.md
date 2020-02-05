@@ -87,3 +87,12 @@ This repository contains code & notebooks for different approaches to training m
 | `zeroshot-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | `cb-annot-de` | - | - |
 | `translated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de` | `cb-annot-de` | - | - |
 | `multitranslated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de-fr-es` | `cb-annot-de` | - | - |
+
+### Training set distribution
+| Class | Number | Percentage |
+| ------------- | ------------| ------------------|
+| positive	| 2447| 	40.78%| 
+| neutral	| 3130	| 52.17%| 
+| negative	| 423	| 7.05%| 
+| ------------- | ------------| ------------------|
+| 	| 6000	| 100%| 
