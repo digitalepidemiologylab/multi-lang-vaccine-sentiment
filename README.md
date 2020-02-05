@@ -90,7 +90,7 @@ This repository contains code & notebooks for different approaches to training m
 
 ### Training set distribution
 | Class | Number | Percentage |
-| ------------- | ------------| ------------------|
+| ------------- | -----------:| -----------------:|
 | positive	| 2447| 	40.78%| 
 | neutral	| 3130	| 52.17%| 
 | negative	| 423	| 7.05%| 
