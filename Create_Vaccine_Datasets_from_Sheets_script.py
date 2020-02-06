@@ -174,12 +174,14 @@ def model_eval(estimator):
 
   # Write log to Training Log File
   data = {'Experiment_Name': EXP_NAME,'Date': format(datetime.datetime.now()),'User': USERNAME, 'Model': BERT_MODEL_NAME, 'Train_Annot_Dataset': TRAIN_ANNOT_DATASET,'Eval_Annot_Dataset': EVAL_ANNOT_DATASET, 'Num_Train_Epochs': NUM_TRAIN_EPOCHS,'Learning_Rate': LEARNING_RATE, 'Max_Seq_Length': MAX_SEQ_LENGTH, 'Eval_Loss': result['eval_loss'],'Loss': result['loss'], 'Comment': COMMENT, **scores}
+  datafields = sorted(data.keys())
+
   if not os.path.isfile(TRAINING_LOG_FILE):
     with open(TRAINING_LOG_FILE, mode='w') as output:
-      output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=data.keys())
+      output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
       output_writer.writeheader()
   with open(TRAINING_LOG_FILE, mode='a+') as output:
-    output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=data.keys())
+    output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
     output_writer.writerow(data)
 
 def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapping=None):
@@ -362,7 +364,7 @@ iterations = 5
 import time
 
 for _ in range(0,iterations):
-  
+  '''  
   #First experiment
   #zeroshot
   print("\nStarting first experiment - zeroshot")
@@ -383,7 +385,8 @@ for _ in range(0,iterations):
     EXP_NAME = 'zeroshot-'+dataset
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
-
+  '''
+  
   #Second experiment
   #translated
   print("\nStarting second experiment - translate")
