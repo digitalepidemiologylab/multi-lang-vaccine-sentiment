@@ -329,7 +329,7 @@ COMMENT = 'No comment'#@param {type:"string"}
 EXP_NAME = 'default-exp-name'
 #@markdown <br />
 ORIGINAL_BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'#@param {type:"string"}
-BERT_MODEL_NAME = 'bert_model.ckpt.index'#@param {type:"string"}
+BERT_MODEL_NAME = 'bert_model.ckpt'#@param {type:"string"}
 
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/' #@param {type:"string"}
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'#@param {type:"string"}
@@ -346,7 +346,7 @@ TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',TRAIN_ANNOT_DATASET)
 EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',EVAL_ANNOT_DATASET)
 
 #Copy the files
-t = time.strftime('%Y-%m-%dT%H:%M:%SZ')
+t = time.strftime('%Y-%m-%d%H:%M:%S')
 
 print(t)
 
@@ -407,9 +407,9 @@ if not tf.gfile.Exists(os.path.join(BERT_MODEL_DIR,'bert_config.json')):
   print('Can not access the Bert model config file. This file should be located in the Bert model dir')
   sys.exit('Stopping execution!')
 
-if not tf.gfile.Exists(BERT_MODEL_FILE):
-  print('Can not access the Bert model file')
-  sys.exit('Stopping execution!')
+#if not tf.gfile.Exists(BERT_MODEL_FILE):
+#  print('Can not access the Bert model file')
+#  sys.exit('Stopping execution!')
 
 if not tf.gfile.Exists(TRAINING_LOG_FILE):
   print('The Training Log File used to write training results is not available. Creating one for you.')
@@ -448,6 +448,7 @@ import time
 for _ in range(0,iterations):  
   #First experiment
   #zeroshot
+  '''
   print("\nStarting first experiment - zeroshot")
   zeroshot_train = ['cb-annot-en']
   zeroshot_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
@@ -467,6 +468,8 @@ for _ in range(0,iterations):
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
 
+  '''
+  
   #Second experiment
   #translated
   print("\nStarting second experiment - translate")
@@ -503,3 +506,5 @@ for _ in range(0,iterations):
     EXP_NAME = 'multitranslate-'+dataset
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
+
+
