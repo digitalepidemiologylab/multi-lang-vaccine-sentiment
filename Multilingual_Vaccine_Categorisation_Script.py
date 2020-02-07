@@ -346,8 +346,13 @@ TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',TRAIN_ANNOT_DATASET)
 EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',EVAL_ANNOT_DATASET)
 
 #Copy the files
-TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, USERNAME+"-"+str(uuid.uuid4()))
+t = time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+print(t)
+
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, t+"-"+USERNAME+"-"+str(uuid.uuid4()))
 BERT_MODEL_DIR = TEMP_OUTPUT_DIR
+
 
 os.system("gsutil -m cp "+ORIGINAL_BERT_MODEL_DIR+"*.* "+TEMP_OUTPUT_DIR)
 
