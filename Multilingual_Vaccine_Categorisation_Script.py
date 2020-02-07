@@ -10,7 +10,7 @@ Original file is located at
 Performing vaccine stance fintetuning/categorisation training on various multilingual dataset
 """
 
-RUN_IN_COLAB = True  #@param {type:"boolean"}
+RUN_IN_COLAB = False  #@param {type:"boolean"}
 USE_TPU = True  #@param {type:"boolean"}
 
 FORCE_TRAIN_EPOCHS = 0
@@ -18,7 +18,7 @@ FORCE_TRAIN_EPOCHS = 0
 if not RUN_IN_COLAB:
   import sys, getopt
   if len(sys.argv) == 4:
-    FORCE_TRAIN_EPOCHS = sys.argv[4]
+    FORCE_TRAIN_EPOCHS = int(sys.argv[3])
 
   if len(sys.argv) <=2 or len(sys.argv) >=5:
     print("Error. Provide the IP-address for the TPU and a unique username. Optional Finetuning Train Epochs")
@@ -47,7 +47,9 @@ import sklearn.metrics
 if RUN_IN_COLAB:
   LOCAL_DIR =""
 else:
-  LOCAL_DIR = "/home/per/"
+  LOCAL_DIR = "/home/per/multi-lang-vaccine-sentiment"
+
+print(LOCAL_DIR)
 
 #Authenticate
 auth.authenticate_user()
@@ -61,7 +63,7 @@ else:
 
 #Clone Bert
 if not os.path.exists('bert_repo'):  
-  !test -d bert_repo || git clone https://github.com/google-research/bert bert_repo
+  os.system("test -d bert_repo || git clone https://github.com/google-research/bert bert_repo")
 else:
   print('The Bert repository has already been cloned')
 
@@ -100,10 +102,11 @@ if USE_TPU:
 
   
   # Upload credentials to TPU for all future sessions on this TPU.
-  with tf.Session(TPU_ADDRESS) as session:
-    with open('/content/adc.json', 'r') as f:
-      auth_info = json.load(f)
-    tf.contrib.cloud.configure_gcs(session, credentials=auth_info)
+  if RUN_IN_COLAB:
+    with tf.Session(TPU_ADDRESS) as session:
+      with open('/content/adc.json', 'r') as f:
+        auth_info = json.load(f)
+      tf.contrib.cloud.configure_gcs(session, credentials=auth_info)
 
 
 #Define some custom functions
@@ -151,7 +154,7 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 # Train the model
 def model_train(estimator):
   # Time to train another model - Clean the output directory.
-  os.system("gsutil rm -r"+TEMP_OUTPUT_DIR)
+  os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
 
   # Force TF Hub writes to the GS bucket we provide.
   os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
@@ -319,7 +322,7 @@ EXP_NAME = 'default-exp-name'
 BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'#@param {type:"string"}
 BERT_MODEL_NAME = 'bert_model.ckpt.index'#@param {type:"string"}
 TEMP_OUTPUT_DIR = 'gs://perepublic/finetuned_models/' #@param {type:"string"}
-TRAINING_LOG_FILE = '/content/GDrive/My Drive/multi-lang-vaccine-sentiment/trainlog.csv'#@param {type:"string"}
+TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'#@param {type:"string"}
 #@markdown <br />
 #@markdown Only relevant if you should run the train/eval example. Not used in experiments
 
@@ -330,8 +333,8 @@ EVAL_ANNOT_DATASET = 'cb-annot-en' #@param ['cb-annot-en','cb-annot-en-de','cb-a
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR,BERT_MODEL_NAME)
 
 
-TRAIN_ANNOT_DATASET_DIR = os.path.join('/content/data',TRAIN_ANNOT_DATASET)
-EVAL_ANNOT_DATASET_DIR = os.path.join('/content/data',EVAL_ANNOT_DATASET)
+TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',TRAIN_ANNOT_DATASET)
+EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',EVAL_ANNOT_DATASET)
 
 #@markdown ##Set finetuning parameters, tokenizer and resolver
 #@markdown Open the form for finetuning
@@ -361,7 +364,7 @@ if not tf.gfile.Exists(BERT_MODEL_DIR):
   sys.exit('Stopping execution!')
 
 if not tf.gfile.Exists(TRAIN_ANNOT_DATASET_DIR):
-  print('Can not access the training files')
+  print('Can not access the training files in '+ TRAIN_ANNOT_DATASET_DIR)
   sys.exit('Stopping execution!')
 
 if not tf.gfile.Exists(EVAL_ANNOT_DATASET_DIR):
@@ -404,6 +407,7 @@ label_list = processor.get_labels()
 
 # Compute number of train and warmup steps from batch size
 train_examples = processor.get_train_examples(TRAIN_ANNOT_DATASET_DIR)
+
 num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
 num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
 print('There are a total of '+str(len(train_examples))+' training examples in '+TRAIN_ANNOT_DATASET_DIR+'.\nWe will be training for '+str(NUM_TRAIN_EPOCHS)+' epochs, which means '+str(num_train_steps)+' training steps with a batch size of '+str(TRAIN_BATCH_SIZE)+'.\n\n')
@@ -428,7 +432,7 @@ for _ in range(0,iterations):
 
   for dataset in zeroshot_train:
     TRAIN_ANNOT_DATASET = dataset
-    TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'/content/data', dataset)
+    TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'zeroshot-'+dataset
     print("Training " + EXP_NAME)
     estimator_from_checkpoints = model_init()
@@ -436,11 +440,11 @@ for _ in range(0,iterations):
   
   for dataset in zeroshot_eval:
     EVAL_ANNOT_DATASET = dataset
-    EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'/content/data', dataset)
+    EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'zeroshot-'+dataset
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
-  
+
   #Second experiment
   #translated
   print("\nStarting second experiment - translate")
@@ -448,13 +452,13 @@ for _ in range(0,iterations):
   translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
   for idx,dataset in enumerate(translated_train):
     TRAIN_ANNOT_DATASET = dataset
-    TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'content/data', dataset)
+    TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'translated-'+dataset
     print("Training " + EXP_NAME)
     estimator_from_checkpoints = model_init()
     model_train(estimator_from_checkpoints)
     EVAL_ANNOT_DATASET = translated_eval[idx]
-    EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'/content/data', translated_eval[idx])
+    EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', translated_eval[idx])
     EXP_NAME = 'translated-'+translated_eval[idx]
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
@@ -466,14 +470,14 @@ for _ in range(0,iterations):
   multitranslate_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
   for dataset in multitranslate_train:
     TRAIN_ANNOT_DATASET = dataset
-    TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'/content/data', dataset)
+    TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'multitranslate-'+dataset
     print("Training " + EXP_NAME)
     estimator_from_checkpoints = model_init()    
     model_train(estimator_from_checkpoints)
   for dataset in multitranslate_eval:
     EVAL_ANNOT_DATASET = dataset
-    EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'/content/data', dataset)
+    EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'multitranslate-'+dataset
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
