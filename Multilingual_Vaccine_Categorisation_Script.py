@@ -420,7 +420,7 @@ print('There are a total of '+str(len(train_examples))+' training examples in '+
 # model_eval(estimator_from_checkpoints)
 
 #Experiments
-iterations = 1
+iterations = 5
 import time
 
 for _ in range(0,iterations):  
