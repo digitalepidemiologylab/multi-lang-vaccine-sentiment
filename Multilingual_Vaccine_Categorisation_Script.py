@@ -33,7 +33,7 @@ if not RUN_IN_COLAB:
 
 
 #import modules
-import sys, os, json, csv, datetime, pprint, uuid
+import sys, os, json, csv, datetime, pprint, uuid, time
 from google.colab import auth
 from google.colab import drive
 import tensorflow as tf
@@ -155,7 +155,10 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 def model_train(estimator):
   # Time to train another model - Clean the output directory.
   os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
-
+  os.system("gsutil -m cp "+ORIGINAL_BERT_MODEL_DIR+"*.* "+TEMP_OUTPUT_DIR)
+  print("Copied file....")
+  time.sleep(5)
+  
   # Force TF Hub writes to the GS bucket we provide.
   os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
   
@@ -317,14 +320,17 @@ if RUN_IN_COLAB:
   USERNAME = "pere" #@param {type:"string"}
 else:
   USERNAME = sys.argv[2]
+
   
+
 #@markdown <br />
 
-COMMENT = 'My test'#@param {type:"string"}
+COMMENT = 'No comment'#@param {type:"string"}
 EXP_NAME = 'default-exp-name'
 #@markdown <br />
-BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'#@param {type:"string"}
+ORIGINAL_BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'#@param {type:"string"}
 BERT_MODEL_NAME = 'bert_model.ckpt.index'#@param {type:"string"}
+
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/' #@param {type:"string"}
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'#@param {type:"string"}
 #@markdown <br />
@@ -333,12 +339,23 @@ TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'#@param
 TRAIN_ANNOT_DATASET = 'cb-annot-en' #@param ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt','cb-annot-en-sm','cb-annot-en-de-sm','cb-annot-en-es-sm','cb-annot-en-fr-sm','cb-annot-en-pt-sm']
 EVAL_ANNOT_DATASET = 'cb-annot-en' #@param ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt','cb-annot-en-sm','cb-annot-en-de-sm','cb-annot-en-es-sm','cb-annot-en-fr-sm','cb-annot-en-pt-sm']
 
-#Complete some paths
-BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR,BERT_MODEL_NAME)
+
 
 
 TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',TRAIN_ANNOT_DATASET)
 EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data',EVAL_ANNOT_DATASET)
+
+#Copy the files
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, USERNAME+"-"+str(uuid.uuid4()))
+BERT_MODEL_DIR = TEMP_OUTPUT_DIR
+
+os.system("gsutil -m cp "+ORIGINAL_BERT_MODEL_DIR+"*.* "+TEMP_OUTPUT_DIR)
+
+time.sleep(2)
+
+#Complete some paths
+BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR,BERT_MODEL_NAME)
+
 
 #@markdown ##Set finetuning parameters, tokenizer and resolver
 #@markdown Open the form for finetuning
@@ -362,7 +379,7 @@ NUM_TPU_CORES = 8
 ITERATIONS_PER_LOOP = 1000
 LOWER_CASED = False
 
-TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, USERNAME+"-"+str(uuid.uuid4()))
+
 
 #Do checks to see if all necessary files exists
 if not tf.gfile.Exists(BERT_MODEL_DIR):
