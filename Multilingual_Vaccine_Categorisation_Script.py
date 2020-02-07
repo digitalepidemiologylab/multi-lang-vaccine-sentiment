@@ -33,7 +33,7 @@ if not RUN_IN_COLAB:
 
 
 #import modules
-import sys, os, json, csv, datetime, pprint
+import sys, os, json, csv, datetime, pprint, uuid
 from google.colab import auth
 from google.colab import drive
 import tensorflow as tf
@@ -325,7 +325,7 @@ EXP_NAME = 'default-exp-name'
 #@markdown <br />
 BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'#@param {type:"string"}
 BERT_MODEL_NAME = 'bert_model.ckpt.index'#@param {type:"string"}
-TEMP_OUTPUT_DIR = 'gs://perepublic/finetuned_models/' #@param {type:"string"}
+TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/' #@param {type:"string"}
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'#@param {type:"string"}
 #@markdown <br />
 #@markdown Only relevant if you should run the train/eval example. Not used in experiments
@@ -362,6 +362,8 @@ NUM_TPU_CORES = 8
 ITERATIONS_PER_LOOP = 1000
 LOWER_CASED = False
 
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, USERNAME,str(uuid.uuid4()))
+
 #Do checks to see if all necessary files exists
 if not tf.gfile.Exists(BERT_MODEL_DIR):
   print('Can not access the Bert model directory')
@@ -374,12 +376,6 @@ if not tf.gfile.Exists(TRAIN_ANNOT_DATASET_DIR):
 if not tf.gfile.Exists(EVAL_ANNOT_DATASET_DIR):
   print('Can not access the training files')
   sys.exit('Stopping execution!')
-
-if not tf.gfile.Exists(TEMP_OUTPUT_DIR):
-  print('Can not access the temporary directory for storing finetuned models')
-  sys.exit('Stopping execution!')
-else:
-  TEMP_OUTPUT_DIR += USERNAME
 
 if not tf.gfile.Exists(os.path.join(BERT_MODEL_DIR,'vocab.txt')):
   print('Can not access the Bert model vocabulary file. This file should be located in the Bert model dir')
