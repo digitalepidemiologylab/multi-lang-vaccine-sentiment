@@ -362,7 +362,7 @@ NUM_TPU_CORES = 8
 ITERATIONS_PER_LOOP = 1000
 LOWER_CASED = False
 
-TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, USERNAME,str(uuid.uuid4()))
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, USERNAME+"-"+str(uuid.uuid4()))
 
 #Do checks to see if all necessary files exists
 if not tf.gfile.Exists(BERT_MODEL_DIR):
