@@ -313,7 +313,11 @@ def get_run_config(output_dir):
 #@markdown Run this and the cell below. Username and Comment are only used in temporal folders and in the train log file.
 
 #General Files and Settings
-USERNAME = "pere" #@param {type:"string"}
+if RUN_IN_COLAB:
+  USERNAME = "pere" #@param {type:"string"}
+else:
+  USERNAME = sys.argv[2]
+  
 #@markdown <br />
 
 COMMENT = 'My test'#@param {type:"string"}
