@@ -41,16 +41,14 @@ This repository contains code & notebooks for different approaches to training m
 | `cb-annot-en-it` | Translated from `cb-annot-en` | 10k | en | it |
 | `cb-annot-en-de` | Translated from `cb-annot-en` | 10k | en | de |
 | `cb-annot-en-no` | Translated from `cb-annot-en` | 10k | en | no |
-| `cb-annot-en-de-fr-es` | Translated from `cb-annot-en` | 50k | en | no |
-
-`cb-annot-en-de-fr-es`
+| `cb-annot-en-de-fr-es` | Translated from `cb-annot-en` | 50k | en | - |
 | `cb-annot-en-fr-sm` | Translated from `cb-annot-en`  | 5k | en | fr |
 | `cb-annot-en-es-sm` | Translated from `cb-annot-en` | 5k | en | es |
 | `cb-annot-en-pt-sm` | Translated from `cb-annot-en` | 5k | en | pt |
 | `cb-annot-en-it-sm` | Translated from `cb-annot-en` | 5k | en | it |
 | `cb-annot-en-de-sm` | Translated from `cb-annot-en` | 5k | en | de |
 | `cb-annot-en-no-sm` | Translated from `cb-annot-en` | 5k | en | no |
-| `cb-annot-en-de-fr-es-sm` | Translated from `cb-annot-en` | 30k | en | no |
+| `cb-annot-en-de-fr-es-sm` | Translated from `cb-annot-en` | 30k | en | - |
 
 
 ## Domain-specific pretraining datasets
