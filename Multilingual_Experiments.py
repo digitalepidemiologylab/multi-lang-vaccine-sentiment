@@ -1,10 +1,10 @@
 
 import argparse, sys
 parser = argparse.ArgumentParser()
-parser.add_argument("ip", help="IP-address of the TPU")
-parser.add_argument("user", help="Optional username of the one running the script. This is reflected in the directory name and in the logfile", default="Anonymous")
-parser.add_argument("iterations", help="Number of times the script should run. Default is 1", default=1, type=int)
-parser.add_argument("epochs", help="Number of train epochs. Default is 3", default=3, type=int)
+parser.add_argument("-ip", help="IP-address of the TPU")
+parser.add_argument("-user", help="Optional username of the one running the script. This is reflected in the directory name and in the logfile", default="Anonymous")
+parser.add_argument("-iterations", help="Number of times the script should run. Default is 1", default=1, type=int)
+parser.add_argument("-epochs", help="Number of train epochs. Default is 3", default=3, type=int)
 
 args = parser.parse_args()
 
