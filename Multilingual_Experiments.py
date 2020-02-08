@@ -59,7 +59,7 @@ BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR,BERT_MODEL_NAME)
 
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, time.strftime('%Y-%m-%d%H:%M:%S') + "-" + args.username + "-"+ uuid.uuid4())
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, time.strftime('%Y-%m-%d%H:%M:%S') + "-" + args.username + "-"+ str(uuid.uuid4()))
 
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'
 
