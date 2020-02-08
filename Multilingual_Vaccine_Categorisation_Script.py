@@ -160,12 +160,17 @@ def model_train(estimator):
   time.sleep(5)
   
   # Force TF Hub writes to the GS bucket we provide.
-  os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
+  #os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
   
   print('Fine tuning BERT base model normally takes a few minutes. Please wait...')
   # We'll set sequences to be at most 128 tokens long.
+  # Compute number of train and warmup steps from batch size
+  
+  print('There are a total of '+str(len(train_examples))+' training examples in '+TRAIN_ANNOT_DATASET_DIR+'.\nWe will be training for '+str(NUM_TRAIN_EPOCHS)+' epochs, which means '+str(num_train_steps)+' training steps with a batch size of '+str(TRAIN_BATCH_SIZE)+'.\n\n')
+
   train_features = run_classifier.convert_examples_to_features(
       train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
+ 
   print('***** Started training at {} *****'.format(datetime.datetime.now()))
   print('  Num examples = {}'.format(len(train_examples)))
   print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
@@ -180,6 +185,9 @@ def model_train(estimator):
       drop_remainder=True)
   estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
   print('***** Finished training at {} *****'.format(datetime.datetime.now()))
+  
+  #Is this correct
+  return estimator
 
 # Evaluate the model.
 def model_eval(estimator):
@@ -421,18 +429,7 @@ if not tf.gfile.Exists(TRAINING_LOG_FILE):
 
 print ('All necessary files exist!')
 
-#Initiation
-tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
-tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
-processor = vaccineStanceProcessor()
-label_list = processor.get_labels()
 
-# Compute number of train and warmup steps from batch size
-train_examples = processor.get_train_examples(TRAIN_ANNOT_DATASET_DIR)
-
-num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
-num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
-print('There are a total of '+str(len(train_examples))+' training examples in '+TRAIN_ANNOT_DATASET_DIR+'.\nWe will be training for '+str(NUM_TRAIN_EPOCHS)+' epochs, which means '+str(num_train_steps)+' training steps with a batch size of '+str(TRAIN_BATCH_SIZE)+'.\n\n')
 
 """# Step 3"""
 
@@ -448,7 +445,7 @@ import time
 for _ in range(0,iterations):  
   #First experiment
   #zeroshot
-  '''
+  
   print("\nStarting first experiment - zeroshot")
   zeroshot_train = ['cb-annot-en']
   zeroshot_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
@@ -458,8 +455,20 @@ for _ in range(0,iterations):
     TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'zeroshot-'+dataset
     print("Training " + EXP_NAME)
+    
+    #Initiation
+    tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
+    tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
+    processor = vaccineStanceProcessor()
+    label_list = processor.get_labels()
+    train_examples = processor.get_train_examples(TRAIN_ANNOT_DATASET_DIR)
+    num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
+    num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
+   
     estimator_from_checkpoints = model_init()
-    model_train(estimator_from_checkpoints)
+    estimator_from_checkpoint = model_train(estimator_from_checkpoints)
+    #Changes in all examples - 7.2
+    #model_train(estimator_from_checkpoints)
   
   for dataset in zeroshot_eval:
     EVAL_ANNOT_DATASET = dataset
@@ -468,8 +477,8 @@ for _ in range(0,iterations):
     print("Evaluating " + EXP_NAME)
     model_eval(estimator_from_checkpoints)
 
-  '''
-  
+
+    
   #Second experiment
   #translated
   print("\nStarting second experiment - translate")
@@ -480,8 +489,18 @@ for _ in range(0,iterations):
     TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'translated-'+dataset
     print("Training " + EXP_NAME)
+        
+    #Initiation
+    tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
+    tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
+    processor = vaccineStanceProcessor()
+    label_list = processor.get_labels()
+    train_examples = processor.get_train_examples(TRAIN_ANNOT_DATASET_DIR)
+    num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
+    num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
     estimator_from_checkpoints = model_init()
-    model_train(estimator_from_checkpoints)
+    estimator_from_checkpoint = model_train(estimator_from_checkpoints)
+   
     EVAL_ANNOT_DATASET = translated_eval[idx]
     EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', translated_eval[idx])
     EXP_NAME = 'translated-'+translated_eval[idx]
@@ -498,8 +517,18 @@ for _ in range(0,iterations):
     TRAIN_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
     EXP_NAME = 'multitranslate-'+dataset
     print("Training " + EXP_NAME)
+        
+    #Initiation
+    tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
+    tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
+    processor = vaccineStanceProcessor()
+    label_list = processor.get_labels()
+    train_examples = processor.get_train_examples(TRAIN_ANNOT_DATASET_DIR)
+    num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
+    num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
     estimator_from_checkpoints = model_init()    
-    model_train(estimator_from_checkpoints)
+    estimator_from_checkpoint = model_train(estimator_from_checkpoints)
+
   for dataset in multitranslate_eval:
     EVAL_ANNOT_DATASET = dataset
     EVAL_ANNOT_DATASET_DIR = os.path.join(LOCAL_DIR,'data', dataset)
@@ -508,3 +537,9 @@ for _ in range(0,iterations):
     model_eval(estimator_from_checkpoints)
 
 
+    
+    #Initiation
+    tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
+    tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
+    processor = vaccineStanceProcessor()
+    label_list = processor.get_labels()
