@@ -505,7 +505,7 @@ if __name__== "__main__":
 
     for i in range(0,args.iterations):
         run_experiment(args.experiments)
-        print(f"*** Completed iteration {i + 1}")
+        print("*** Completed iteration "+str(i + 1))
 
 
 set
