@@ -271,7 +271,7 @@ if __name__== "__main__":
     TPU_ADDRESS = tpu_init()
 
     for _ in range(0,args.iterations):
-        run_experiment(args.experiment)
+        run_experiment(args.experiments)
 
 
 set
