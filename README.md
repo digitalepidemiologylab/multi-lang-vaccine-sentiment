@@ -1,4 +1,4 @@
-# Multi-language vaccine sentiment --
+# Multi-language vaccine sentiment
 
 This repository contains code & notebooks for different approaches to training multi-language vaccine sentiment models.
 
