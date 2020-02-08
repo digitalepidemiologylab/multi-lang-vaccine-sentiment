@@ -34,7 +34,7 @@ if not '/content/bert_repo' in sys.path:
   sys.path += ['bert_repo']
 
 ##############################
-##Import remaining modules####
+##Import remaining libraries##
 ##############################
 from google.colab import auth
 from google.colab import drive
@@ -59,7 +59,7 @@ BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR,BERT_MODEL_NAME)
 
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, time.strftime('%Y-%m-%d%H:%M:%S') +"-"+args.username+"-"+str(uuid.uuid4()))
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, f"{time.strftime('%Y-%m-%d%H:%M:%S')} - {args.username} - {uuid.uuid4()}")
 
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'
 
@@ -157,9 +157,11 @@ def run_experiment(experiments):
                 num_shards=NUM_TPU_CORES,
                 per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2))
 
-
+    ########################
+    ##### EXPERIMENT 1 #####
+    ########################
     if "1" in experiment_list:
-        print("*****Starting with experiment #1*******")
+        print("***** Starting Experiment 1 *******")
         zeroshot_train = ['cb-annot-en']
         zeroshot_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
@@ -216,9 +218,8 @@ def run_experiment(experiments):
             estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
             print('***** Finished training at {} *****'.format(datetime.datetime.now()))
 
-
         for eval_annot_dataset in zeroshot_eval:
-            EXP_NAME = 'zeroshot-'+train_annot_dataset+"-"+eval_annot_dataset
+            EXP_NAME = 'zeroshot-(train)-'+train_annot_dataset+"-(eval)-"+eval_annot_dataset
             
             eval_examples = processor.get_dev_examples(os.path.join('data', eval_annot_dataset))
             eval_features = run_classifier.convert_examples_to_features(
@@ -227,7 +228,7 @@ def run_experiment(experiments):
             print('Num examples = {}'.format(len(eval_examples)))
             print('Batch size = {}'.format(EVAL_BATCH_SIZE))
 
-            # Eval will be slightly WRONG on the TPU because it will truncate the last batch.
+            # Eval will be slightly WRONG on the TPU because it will truncate the last batch. 
             eval_steps = int(len(eval_examples) / EVAL_BATCH_SIZE)
             eval_input_fn = run_classifier.input_fn_builder(
                 features=eval_features,
@@ -242,8 +243,9 @@ def run_experiment(experiments):
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
                 print('***** Eval results *****')
                 for key in sorted(result.keys()):
-                    print('  {} = {}'.format(key, str(result[key])))
-                    writer.write('%s = %s\n' % (key, str(result[key])))
+                    print(f" {key} = {result[key]}")
+                    writer.write('%s = %s\n' % (key, f"{result[key]}"))
+
             predictions = estimator.predict(eval_input_fn)
             y_pred = [np.argmax(p['probabilities']) for p in predictions]
             y_true = [e.label_id for e in eval_features]
@@ -266,9 +268,232 @@ def run_experiment(experiments):
                 output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
                 output_writer.writerow(data)
                 print("Wrote log to csv-file")
+        print("***** Completed Experiment 1 *******")
+
+    ########################
+    ##### EXPERIMENT 2 #####
+    ########################
+    if "2" in experiment_list:
+        print("***** Starting Experiment 2 *******")
+        translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        
+        for idx,train_annot_dataset in enumerate(translated_train):
+            eval_annot_dataset = train_annot_dataset[idx]
+
+            tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
+            tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
+            processor = vaccineStanceProcessor()
+            label_list = processor.get_labels()
+
+            train_examples = processor.get_train_examples(os.path.join('data', train_annot_dataset))
+            num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
+            num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
+        
+            #Initiation
+            model_fn = run_classifier.model_fn_builder(
+                bert_config=modeling.BertConfig.from_json_file(os.path.join(BERT_MODEL_DIR,'bert_config.json')),
+                num_labels=len(label_list),
+                init_checkpoint=BERT_MODEL_FILE,
+                learning_rate=LEARNING_RATE,
+                num_train_steps=num_train_steps,
+                num_warmup_steps=num_warmup_steps,
+                use_tpu=USE_TPU,
+                use_one_hot_embeddings=True
+            )
+
+            estimator = tf.contrib.tpu.TPUEstimator(
+                use_tpu=USE_TPU,
+                model_fn=model_fn,
+                config=get_run_config(TEMP_OUTPUT_DIR),
+                train_batch_size=TRAIN_BATCH_SIZE,
+                eval_batch_size=EVAL_BATCH_SIZE,
+                predict_batch_size=PREDICT_BATCH_SIZE,
+            )
+
+            os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
+
+            train_features = run_classifier.convert_examples_to_features(
+                train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
+
+            print('Fine tuning BERT base model normally takes a few minutes. Please wait...')            
+            print('***** Started training at {} *****'.format(datetime.datetime.now()))
+            print('  Num examples = {}'.format(len(train_examples)))
+            print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
+            print('  Train steps = {}'.format(num_train_steps))
+            print('  Epochs = {}'.format(NUM_TRAIN_EPOCHS))
+            
+            tf.logging.info('  Num steps = %d', num_train_steps)
+            train_input_fn = run_classifier.input_fn_builder(
+                features=train_features,
+                seq_length=MAX_SEQ_LENGTH,
+                is_training=True,
+                drop_remainder=True)
+                
+            estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
+            print('***** Finished training at {} *****'.format(datetime.datetime.now()))
+
+            EXP_NAME = 'translated-(train)-'+train_annot_dataset+"-(eval)-"+eval_annot_dataset
+            
+            eval_examples = processor.get_dev_examples(os.path.join('data', eval_annot_dataset))
+            eval_features = run_classifier.convert_examples_to_features(
+                eval_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
+            print('***** Started evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
+            print('Num examples = {}'.format(len(eval_examples)))
+            print('Batch size = {}'.format(EVAL_BATCH_SIZE))
+
+            # Eval will be slightly WRONG on the TPU because it will truncate the last batch. 
+            eval_steps = int(len(eval_examples) / EVAL_BATCH_SIZE)
+            eval_input_fn = run_classifier.input_fn_builder(
+                features=eval_features,
+                seq_length=MAX_SEQ_LENGTH,
+                is_training=False,
+                drop_remainder=True)
+            result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
+
+            print('***** Finished first half of evaluation at {} *****'.format(datetime.datetime.now()))
+            
+            output_eval_file = os.path.join(TEMP_OUTPUT_DIR, 'eval_results.txt')
+            with tf.gfile.GFile(output_eval_file, 'w') as writer:
+                print('***** Eval results *****')
+                for key in sorted(result.keys()):
+                    print(f" {key} = {result[key]}")
+                    writer.write('%s = %s\n' % (key, f"{result[key]}"))
+            predictions = estimator.predict(eval_input_fn)
+            y_pred = [np.argmax(p['probabilities']) for p in predictions]
+            y_true = [e.label_id for e in eval_features]
+            label_mapping = dict(zip(range(len(label_list)), label_list))
+            scores = performance_metrics(y_true, y_pred, label_mapping=label_mapping)
+            print('Final scores:')
+            print(scores)
+            print('***** Finished second half of evaluation at {} *****'.format(datetime.datetime.now()))
 
 
- 
+            # Write log to Training Log File
+            data = {'Experiment_Name': EXP_NAME,'Date': format(datetime.datetime.now()),'User': args.username, 'Model': BERT_MODEL_NAME, 'Train_Annot_Dataset': train_annot_dataset,'Eval_Annot_Dataset': eval_annot_dataset, 'Num_Train_Epochs': NUM_TRAIN_EPOCHS,'Learning_Rate': LEARNING_RATE, 'Max_Seq_Length': MAX_SEQ_LENGTH, 'Eval_Loss': result['eval_loss'],'Loss': result['loss'], 'Comment': args.comment, **scores}
+            datafields = sorted(data.keys())
+
+            if not os.path.isfile(TRAINING_LOG_FILE):
+                with open(TRAINING_LOG_FILE, mode='w') as output:
+                    output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
+                    output_writer.writeheader()
+            with open(TRAINING_LOG_FILE, mode='a+') as output:
+                output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
+                output_writer.writerow(data)
+                print("Wrote log to csv-file")
+        print("***** Completed Experiment 2 *******")
+
+    ########################
+    ##### EXPERIMENT 3 #####
+    ########################
+    if "1" in experiment_list:
+        print("***** Starting Experiment 3 *******")
+        multitranslate_train = ['cb-annot-en-de-fr-es']
+        multitranslate_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+
+        for train_annot_dataset in multitranslate_train:
+            tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
+            tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
+            processor = vaccineStanceProcessor()
+            label_list = processor.get_labels()
+
+            train_examples = processor.get_train_examples(os.path.join('data', train_annot_dataset))
+            num_train_steps = int(len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
+            num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
+        
+            #Initiation
+            model_fn = run_classifier.model_fn_builder(
+                bert_config=modeling.BertConfig.from_json_file(os.path.join(BERT_MODEL_DIR,'bert_config.json')),
+                num_labels=len(label_list),
+                init_checkpoint=BERT_MODEL_FILE,
+                learning_rate=LEARNING_RATE,
+                num_train_steps=num_train_steps,
+                num_warmup_steps=num_warmup_steps,
+                use_tpu=USE_TPU,
+                use_one_hot_embeddings=True
+            )
+
+            estimator = tf.contrib.tpu.TPUEstimator(
+                use_tpu=USE_TPU,
+                model_fn=model_fn,
+                config=get_run_config(TEMP_OUTPUT_DIR),
+                train_batch_size=TRAIN_BATCH_SIZE,
+                eval_batch_size=EVAL_BATCH_SIZE,
+                predict_batch_size=PREDICT_BATCH_SIZE,
+            )
+
+            os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
+
+            train_features = run_classifier.convert_examples_to_features(
+                train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
+
+            print('Fine tuning BERT base model normally takes a few minutes. Please wait...')            
+            print('***** Started training at {} *****'.format(datetime.datetime.now()))
+            print('  Num examples = {}'.format(len(train_examples)))
+            print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
+            print('  Train steps = {}'.format(num_train_steps))
+            print('  Epochs = {}'.format(NUM_TRAIN_EPOCHS))
+            
+            tf.logging.info('  Num steps = %d', num_train_steps)
+            train_input_fn = run_classifier.input_fn_builder(
+                features=train_features,
+                seq_length=MAX_SEQ_LENGTH,
+                is_training=True,
+                drop_remainder=True)
+                
+            estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
+            print('***** Finished training at {} *****'.format(datetime.datetime.now()))
+
+        for eval_annot_dataset in multitranslate_eval:
+            EXP_NAME = 'multitranslate-(train)-'+train_annot_dataset+"-(eval)-"+eval_annot_dataset
+            
+            eval_examples = processor.get_dev_examples(os.path.join('data', eval_annot_dataset))
+            eval_features = run_classifier.convert_examples_to_features(
+                eval_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
+            print('***** Started evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
+            print('Num examples = {}'.format(len(eval_examples)))
+            print('Batch size = {}'.format(EVAL_BATCH_SIZE))
+
+            # Eval will be slightly WRONG on the TPU because it will truncate the last batch. 
+            eval_steps = int(len(eval_examples) / EVAL_BATCH_SIZE)
+            eval_input_fn = run_classifier.input_fn_builder(
+                features=eval_features,
+                seq_length=MAX_SEQ_LENGTH,
+                is_training=False,
+                drop_remainder=True)
+            result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
+
+            print('***** Finished first half of evaluation at {} *****'.format(datetime.datetime.now()))
+            
+            output_eval_file = os.path.join(TEMP_OUTPUT_DIR, 'eval_results.txt')
+            with tf.gfile.GFile(output_eval_file, 'w') as writer:
+                print('***** Eval results *****')
+                for key in sorted(result.keys()):
+                    print(f" {key} = {result[key]}")
+                    writer.write('%s = %s\n' % (key, f"{result[key]}"))
+            predictions = estimator.predict(eval_input_fn)
+            y_pred = [np.argmax(p['probabilities']) for p in predictions]
+            y_true = [e.label_id for e in eval_features]
+            label_mapping = dict(zip(range(len(label_list)), label_list))
+            scores = performance_metrics(y_true, y_pred, label_mapping=label_mapping)
+            print('Final scores:')
+            print(scores)
+            print('***** Finished second half of evaluation at {} *****'.format(datetime.datetime.now()))
+
+
+            # Write log to Training Log File
+            data = {'Experiment_Name': EXP_NAME,'Date': format(datetime.datetime.now()),'User': args.username, 'Model': BERT_MODEL_NAME, 'Train_Annot_Dataset': train_annot_dataset,'Eval_Annot_Dataset': eval_annot_dataset, 'Num_Train_Epochs': NUM_TRAIN_EPOCHS,'Learning_Rate': LEARNING_RATE, 'Max_Seq_Length': MAX_SEQ_LENGTH, 'Eval_Loss': result['eval_loss'],'Loss': result['loss'], 'Comment': args.comment, **scores}
+            datafields = sorted(data.keys())
+
+            if not os.path.isfile(TRAINING_LOG_FILE):
+                with open(TRAINING_LOG_FILE, mode='w') as output:
+                    output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
+                    output_writer.writeheader()
+            with open(TRAINING_LOG_FILE, mode='a+') as output:
+                output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
+                output_writer.writerow(data)
+                print("Wrote log to csv-file")
+        print("***** Completed Experiment 3 *******")
 
 
 
@@ -278,8 +503,9 @@ def run_experiment(experiments):
 if __name__== "__main__":
     TPU_ADDRESS = tpu_init()
 
-    for _ in range(0,args.iterations):
+    for i in range(0,args.iterations):
         run_experiment(args.experiments)
+        print(f"*** Completed iteration {i + 1}")
 
 
 set
