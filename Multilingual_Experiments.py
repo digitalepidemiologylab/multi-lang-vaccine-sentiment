@@ -286,8 +286,8 @@ def run_experiment(experiments):
         #translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
         
         #Removing German just to test....
-        translated_train = ['cb-annot-en','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
-        translated_eval = ['cb-annot-en','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_train = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_eval = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
         for idx,train_annot_dataset in enumerate(translated_train):
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
