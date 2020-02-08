@@ -197,8 +197,8 @@ def run_experiment(experiments):
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
                 print('***** Eval results *****')
                 for key in sorted(result.keys()):
-                print('  {} = {}'.format(key, str(result[key])))
-                writer.write('%s = %s\n' % (key, str(result[key])))
+                    print('  {} = {}'.format(key, str(result[key])))
+                    writer.write('%s = %s\n' % (key, str(result[key])))
             predictions = estimator.predict(eval_input_fn)
             y_pred = [np.argmax(p['probabilities']) for p in predictions]
             y_true = [e.label_id for e in eval_features]
