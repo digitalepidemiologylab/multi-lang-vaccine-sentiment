@@ -248,7 +248,7 @@ def run_experiment(experiments):
                 drop_remainder=True)
             result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
 
-            print('***** Finished first half of evaluation at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished first half of evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
             
             output_eval_file = os.path.join(TEMP_OUTPUT_DIR, 'eval_results.txt')
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
@@ -264,7 +264,7 @@ def run_experiment(experiments):
             scores = performance_metrics(y_true, y_pred, label_mapping=label_mapping)
             print('Final scores:')
             print(scores)
-            print('***** Finished second half of evaluation at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished second half of evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
 
 
             # Write log to Training Log File
@@ -286,12 +286,12 @@ def run_experiment(experiments):
     ########################
     if "2" in experiment_list:
         print("***** Starting Experiment 2 *******")
-        translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
-        translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        #translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        #translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
         
         #Some debug code - remove
-        #translated_train = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
-        #translated_eval = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_train = ['cb-annot-en-de']
+        
 
         for idx,train_annot_dataset in enumerate(translated_train):
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
@@ -369,7 +369,7 @@ def run_experiment(experiments):
                 drop_remainder=True)
             result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
 
-            print('***** Finished first half of evaluation at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished first half of evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
             
             output_eval_file = os.path.join(TEMP_OUTPUT_DIR, 'eval_results.txt')
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
@@ -384,7 +384,7 @@ def run_experiment(experiments):
             scores = performance_metrics(y_true, y_pred, label_mapping=label_mapping)
             print('Final scores:')
             print(scores)
-            print('***** Finished second half of evaluation at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished second half of evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
 
 
             # Write log to Training Log File
@@ -483,7 +483,7 @@ def run_experiment(experiments):
                 drop_remainder=True)
             result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
 
-            print('***** Finished first half of evaluation at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished first half of evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
             
             output_eval_file = os.path.join(TEMP_OUTPUT_DIR, 'eval_results.txt')
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
@@ -498,7 +498,7 @@ def run_experiment(experiments):
             scores = performance_metrics(y_true, y_pred, label_mapping=label_mapping)
             print('Final scores:')
             print(scores)
-            print('***** Finished second half of evaluation at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished second half of evaluation of {} at {} *****'.format(EXP_NAME, datetime.datetime.now()))
 
 
             # Write log to Training Log File
