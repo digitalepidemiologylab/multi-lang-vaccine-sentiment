@@ -172,7 +172,7 @@ def run_experiment(experiments):
 
         for train_annot_dataset in zeroshot_train:
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
-            os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
+            os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
@@ -208,7 +208,7 @@ def run_experiment(experiments):
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
 
             print('Fine tuning BERT base model normally takes a few minutes. Please wait...')            
-            print('***** Started training at {} *****'.format(datetime.datetime.now()))
+            print('***** Started training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
             print('  Num examples = {}'.format(len(train_examples)))
             print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
             print('  Train steps = {}'.format(num_train_steps))
@@ -222,7 +222,8 @@ def run_experiment(experiments):
                 drop_remainder=True)
                 
             estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
-            print('***** Finished training at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
+
 
         for eval_annot_dataset in zeroshot_eval:
             EXP_NAME = 'zeroshot-(train)-'+train_annot_dataset+"-(eval)-"+eval_annot_dataset
@@ -281,12 +282,16 @@ def run_experiment(experiments):
     ########################
     if "2" in experiment_list:
         print("***** Starting Experiment 2 *******")
-        translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
-        translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        #translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        #translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
         
+        #Removing German just to test....
+        translated_train = ['cb-annot-en','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_eval = ['cb-annot-en','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+
         for idx,train_annot_dataset in enumerate(translated_train):
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
-            os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
+            os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
             eval_annot_dataset = translated_eval[idx]
 
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
@@ -323,7 +328,8 @@ def run_experiment(experiments):
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
 
             print('Fine tuning BERT base model normally takes a few minutes. Please wait...')            
-            print('***** Started training at {} *****'.format(datetime.datetime.now()))
+            print('***** Started training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
+
             print('  Num examples = {}'.format(len(train_examples)))
             print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
             print('  Train steps = {}'.format(num_train_steps))
@@ -337,7 +343,7 @@ def run_experiment(experiments):
                 drop_remainder=True)
                 
             estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
-            print('***** Finished training at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
 
             EXP_NAME = 'translated-(train)-'+train_annot_dataset+"-(eval)-"+eval_annot_dataset
             
@@ -392,14 +398,14 @@ def run_experiment(experiments):
     ########################
     ##### EXPERIMENT 3 #####
     ########################
-    if "1" in experiment_list:
+    if "3" in experiment_list:
         print("***** Starting Experiment 3 *******")
         multitranslate_train = ['cb-annot-en-de-fr-es']
         multitranslate_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
         for train_annot_dataset in multitranslate_train:
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
-            os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
+            os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
@@ -434,7 +440,7 @@ def run_experiment(experiments):
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
 
             print('Fine tuning BERT base model normally takes a few minutes. Please wait...')            
-            print('***** Started training at {} *****'.format(datetime.datetime.now()))
+            print('***** Started training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
             print('  Num examples = {}'.format(len(train_examples)))
             print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
             print('  Train steps = {}'.format(num_train_steps))
@@ -448,7 +454,7 @@ def run_experiment(experiments):
                 drop_remainder=True)
                 
             estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
-            print('***** Finished training at {} *****'.format(datetime.datetime.now()))
+            print('***** Finished training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
 
         for eval_annot_dataset in multitranslate_eval:
             EXP_NAME = 'multitranslate-(train)-'+train_annot_dataset+"-(eval)-"+eval_annot_dataset
@@ -505,7 +511,7 @@ def run_experiment(experiments):
 
     print ("****Finished running all experiments!")
     print("**Clean up temporary directories by deleting all content**")
-    os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
+    os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
 
 if __name__== "__main__":
     TPU_ADDRESS = tpu_init()
