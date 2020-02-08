@@ -1,15 +1,7 @@
 ##############################
 ########import modules########
 ##############################
-
 import sys, os, json, csv, datetime, pprint, uuid, time, argparse
-from google.colab import auth
-from google.colab import drive
-import tensorflow as tf
-import tensorflow_hub as hub
-import numpy as np
-import sklearn.metrics
-
 
 #Parse commandline
 parser = argparse.ArgumentParser()
@@ -44,6 +36,12 @@ if not '/content/bert_repo' in sys.path:
 ##############################
 ##Import remaining modules####
 ##############################
+from google.colab import auth
+from google.colab import drive
+import tensorflow as tf
+import tensorflow_hub as hub
+import numpy as np
+import sklearn.metrics
 import modeling
 import optimization
 import run_classifier
