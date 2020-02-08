@@ -270,7 +270,8 @@ def run_experiment(experiments):
 if __name__== "__main__":
     TPU_ADDRESS = tpu_init()
 
-    for i in args.iterations:
+    for _ in range(0,args.iterations):
         run_experiment(args.experiment)
 
 
+set
