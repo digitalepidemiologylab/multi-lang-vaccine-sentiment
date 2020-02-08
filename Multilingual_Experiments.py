@@ -13,7 +13,7 @@ import sklearn.metrics
 
 #Parse commandline
 parser = argparse.ArgumentParser()
-parser.add_argument("-ip", help="IP-address of the TPU")
+parser.add_argument("ip", help="IP-address of the TPU")
 parser.add_argument("-username", help="Optional username of the one running the script. This is reflected in the directory name and in the logfile", default="Anonymous")
 parser.add_argument("-iterations", help="Number of times the script should run. Default is 1", default=1, type=int)
 parser.add_argument("-experiments", help="Experiment number. You can specify multiple experiments with using , (comma) between them", type=int)
@@ -91,7 +91,7 @@ LOWER_CASED = False
 def tpu_init():
     #Set up the TPU
     auth.authenticate_user()
-    tpu_address = 'grpc://' + args.ip + ':8470'
+    tpu_address = 'grpc://' + str(args.ip) + ':8470'
     
     print('TPU address is', tpu_address)
     with tf.Session(tpu_address) as session:
