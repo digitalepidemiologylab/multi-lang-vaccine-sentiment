@@ -9,7 +9,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
 import sklearn.metrics
-import vac_utils
+
 
 #Parse commandline
 parser = argparse.ArgumentParser()
@@ -49,7 +49,7 @@ import optimization
 import run_classifier
 import run_classifier_with_tfhub
 import tokenization
-
+import vac_utils
 
 ##############################
 ###########Constants##########
