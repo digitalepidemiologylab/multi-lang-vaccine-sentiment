@@ -15,15 +15,6 @@ print(args.epochs)
 
 sys.exit()
 
-import sys, getopt
-  if len(sys.argv) == 4:
-    FORCE_TRAIN_EPOCHS = int(sys.argv[3])
-
-  if len(sys.argv) <=2 or len(sys.argv) >=5:
-    print("Error. Provide the IP-address for the TPU and a unique username. Optional Finetuning Train Epochs")
-    sys.exit()
-
-  print("IP set to: "+str(sys.argv[1]))
 
 """# Step 1"""
 
