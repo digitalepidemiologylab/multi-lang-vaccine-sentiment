@@ -1,6 +1,6 @@
 #Define some custom functions
-
 def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapping=None):
+    import sklearn.metrics
     """
     Compute performance metrics
     """
