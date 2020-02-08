@@ -146,7 +146,8 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 
 def run_experiment(experiments):
     experiment_list = [x.strip() for x in experiments.split(',')]
-    
+    os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
+
     def get_run_config(output_dir):
         return tf.contrib.tpu.RunConfig(
             cluster=tpu_cluster_resolver,
@@ -162,10 +163,16 @@ def run_experiment(experiments):
     ########################
     if "1" in experiment_list:
         print("***** Starting Experiment 1 *******")
+
+
+        os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
+
         zeroshot_train = ['cb-annot-en']
         zeroshot_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
         for train_annot_dataset in zeroshot_train:
+            print("**Train itialisation starting. Delete all stuff in temporary directory**")
+            os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
@@ -196,7 +203,6 @@ def run_experiment(experiments):
                 predict_batch_size=PREDICT_BATCH_SIZE,
             )
 
-            os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
 
             train_features = run_classifier.convert_examples_to_features(
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
@@ -279,7 +285,9 @@ def run_experiment(experiments):
         translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
         
         for idx,train_annot_dataset in enumerate(translated_train):
-            eval_annot_dataset = train_annot_dataset[idx]
+            print("**Train itialisation starting. Delete all stuff in temporary directory**")
+            os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
+            eval_annot_dataset = translated_eval[idx]
 
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
@@ -310,8 +318,6 @@ def run_experiment(experiments):
                 eval_batch_size=EVAL_BATCH_SIZE,
                 predict_batch_size=PREDICT_BATCH_SIZE,
             )
-
-            os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
 
             train_features = run_classifier.convert_examples_to_features(
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
@@ -392,6 +398,8 @@ def run_experiment(experiments):
         multitranslate_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
         for train_annot_dataset in multitranslate_train:
+            print("**Train itialisation starting. Delete all stuff in temporary directory**")
+            os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
@@ -421,8 +429,6 @@ def run_experiment(experiments):
                 eval_batch_size=EVAL_BATCH_SIZE,
                 predict_batch_size=PREDICT_BATCH_SIZE,
             )
-
-            os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
 
             train_features = run_classifier.convert_examples_to_features(
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
@@ -498,7 +504,8 @@ def run_experiment(experiments):
 
 
     print ("****Finished running all experiments!")
-
+    print("**Clean up temporary directories by deleting all content**")
+    os.system("gsutil rm -r "+TEMP_OUTPUT_DIR)
 
 if __name__== "__main__":
     TPU_ADDRESS = tpu_init()
@@ -506,6 +513,3 @@ if __name__== "__main__":
     for i in range(0,args.iterations):
         run_experiment(args.experiments)
         print("*** Completed iteration "+str(i + 1))
-
-
-set
