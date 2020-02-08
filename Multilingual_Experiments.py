@@ -162,6 +162,7 @@ def run_experiment(experiments):
         zeroshot_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
         for dataset in zeroshot_train:
+            tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
             label_list = processor.get_labels()
