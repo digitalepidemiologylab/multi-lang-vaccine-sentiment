@@ -47,7 +47,8 @@ import optimization
 import run_classifier
 import run_classifier_with_tfhub
 import tokenization
-import vac_utils
+import vac_utils import performance_metrics
+
 
 ##############################
 ###########Constants##########
