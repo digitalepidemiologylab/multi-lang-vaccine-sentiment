@@ -8,7 +8,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("ip", help="IP-address of the TPU")
 parser.add_argument("-username", help="Optional username of the one running the script. This is reflected in the directory name and in the logfile", default="Anonymous")
 parser.add_argument("-iterations", help="Number of times the script should run. Default is 1", default=1, type=int)
-parser.add_argument("-experiments", help="Experiment number. Input as string. You can specify multiple experiments like \"1,3\". Runs experiment #1 by default",default="1")
+parser.add_argument("-experiments", help="Experiment number. Input as a string. You can use a syntax like \"2,3\" to run multiple experiments. Runs experiment #1 by default",default="1")
 parser.add_argument("-epochs", help="Number of train epochs. Default is 3", default=3, type=int)
 parser.add_argument("-comment", help="Add a Comment to the logfile", default="No Comment")
 args = parser.parse_args()
@@ -59,7 +59,7 @@ BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR,BERT_MODEL_NAME)
 
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, time.strftime('%Y-%m-%d%H:%M:%S') + "-"+str(args.username)+"-"+ str(uuid.uuid4()))
+TEMP_OUTPUT_DIR = os.path.join(TEMP_OUTPUT_BASEDIR, f"{time.strftime('%Y-%m-%d%H:%M:%S')} - {args.username} - {uuid.uuid4()}")
 
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'
 
@@ -243,8 +243,8 @@ def run_experiment(experiments):
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
                 print('***** Eval results *****')
                 for key in sorted(result.keys()):
-                    print(f" {key} = {result[key]}")
-                    writer.write('%s = %s\n' % (key, f"{result[key]}"))
+                    print('  {} = {}'.format(key, str(result[key])))
+                    writer.write('%s = %s\n' % (key, str(result[key])))
 
             predictions = estimator.predict(eval_input_fn)
             y_pred = [np.argmax(p['probabilities']) for p in predictions]
@@ -357,8 +357,8 @@ def run_experiment(experiments):
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
                 print('***** Eval results *****')
                 for key in sorted(result.keys()):
-                    print(f" {key} = {result[key]}")
-                    writer.write('%s = %s\n' % (key, f"{result[key]}"))
+                    print('  {} = {}'.format(key, str(result[key])))
+                    writer.write('%s = %s\n' % (key, str(result[key])))
             predictions = estimator.predict(eval_input_fn)
             y_pred = [np.argmax(p['probabilities']) for p in predictions]
             y_true = [e.label_id for e in eval_features]
@@ -469,8 +469,8 @@ def run_experiment(experiments):
             with tf.gfile.GFile(output_eval_file, 'w') as writer:
                 print('***** Eval results *****')
                 for key in sorted(result.keys()):
-                    print(f" {key} = {result[key]}")
-                    writer.write('%s = %s\n' % (key, f"{result[key]}"))
+                    print('  {} = {}'.format(key, str(result[key])))
+                    writer.write('%s = %s\n' % (key, str(result[key])))
             predictions = estimator.predict(eval_input_fn)
             y_pred = [np.argmax(p['probabilities']) for p in predictions]
             y_true = [e.label_id for e in eval_features]
