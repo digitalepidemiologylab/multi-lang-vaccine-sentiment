@@ -38,6 +38,7 @@ if not '/content/bert_repo' in sys.path:
 ##############################
 from google.colab import auth
 from google.colab import drive
+from vac_utils import performance_metrics
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
@@ -47,7 +48,7 @@ import optimization
 import run_classifier
 import run_classifier_with_tfhub
 import tokenization
-import vac_utils import performance_metrics
+
 
 
 ##############################
