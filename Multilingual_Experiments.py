@@ -98,15 +98,6 @@ def tpu_init():
     
     return tpu_address
 
-def get_run_config(output_dir):
-  return tf.contrib.tpu.RunConfig(
-    cluster=tpu_cluster_resolver,
-    model_dir=output_dir,
-    save_checkpoints_steps=SAVE_CHECKPOINTS_STEPS,
-    tpu_config=tf.contrib.tpu.TPUConfig(
-        iterations_per_loop=ITERATIONS_PER_LOOP,
-        num_shards=NUM_TPU_CORES,
-        per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2))
 
 class vaccineStanceProcessor(run_classifier.DataProcessor):
   """Processor for the NoRec data set."""
@@ -154,6 +145,17 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 def run_experiment(experiments):
     experiment_list = [x.strip() for x in experiments.split(',')]
     
+    def get_run_config(output_dir):
+        return tf.contrib.tpu.RunConfig(
+            cluster=tpu_cluster_resolver,
+            model_dir=output_dir,
+            save_checkpoints_steps=SAVE_CHECKPOINTS_STEPS,
+            tpu_config=tf.contrib.tpu.TPUConfig(
+                iterations_per_loop=ITERATIONS_PER_LOOP,
+                num_shards=NUM_TPU_CORES,
+                per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig.PER_HOST_V2))
+
+
     if "1" in experiment_list:
         print("*****Starting with experiment #1*******")
         zeroshot_train = ['cb-annot-en']
