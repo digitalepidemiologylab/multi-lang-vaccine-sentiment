@@ -97,7 +97,9 @@ def tpu_init():
     with tf.Session(tpu_address) as session:
         print('TPU devices:')
         pprint.pprint(session.list_devices())
-    
+
+    os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
+
     return tpu_address
 
 
@@ -146,7 +148,7 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 
 def run_experiment(experiments):
     experiment_list = [x.strip() for x in experiments.split(',')]
-    os.environ['TFHUB_CACHE_DIR'] = TEMP_OUTPUT_DIR
+    
 
     def get_run_config(output_dir):
         return tf.contrib.tpu.RunConfig(
@@ -173,6 +175,8 @@ def run_experiment(experiments):
         for train_annot_dataset in zeroshot_train:
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
             os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
+            TPU_ADDRESS = tpu_init()
+            
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
@@ -282,16 +286,18 @@ def run_experiment(experiments):
     ########################
     if "2" in experiment_list:
         print("***** Starting Experiment 2 *******")
-        #translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
-        #translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_train = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        translated_eval = ['cb-annot-en','cb-annot-en-de','cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
         
-        #Removing German just to test....
-        translated_train = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
-        translated_eval = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        #Some debug code - remove
+        #translated_train = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
+        #translated_eval = ['cb-annot-en-es','cb-annot-en-fr','cb-annot-en-pt']
 
         for idx,train_annot_dataset in enumerate(translated_train):
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
             os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
+            TPU_ADDRESS = tpu_init()
+
             eval_annot_dataset = translated_eval[idx]
 
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
@@ -406,6 +412,8 @@ def run_experiment(experiments):
         for train_annot_dataset in multitranslate_train:
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
             os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
+            TPU_ADDRESS = tpu_init()
+
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(BERT_MODEL_DIR,'vocab.txt'),do_lower_case=LOWER_CASED)
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(TPU_ADDRESS)
             processor = vaccineStanceProcessor()
@@ -514,8 +522,6 @@ def run_experiment(experiments):
     os.system("gsutil -m rm -r "+TEMP_OUTPUT_DIR)
 
 if __name__== "__main__":
-    TPU_ADDRESS = tpu_init()
-
     for i in range(0,args.iterations):
         run_experiment(args.experiments)
         print("*** Completed iteration "+str(i + 1))
