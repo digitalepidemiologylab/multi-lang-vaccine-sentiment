@@ -291,7 +291,7 @@ def run_experiment(experiments):
         
         #Some debug code - remove
         translated_train = ['cb-annot-en-de']
-        
+        translated_eval = ['cb-annot-en-de']
 
         for idx,train_annot_dataset in enumerate(translated_train):
             print("**Train itialisation starting. Delete all stuff in temporary directory**")
