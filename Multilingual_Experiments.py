@@ -215,8 +215,8 @@ def run_experiment(experiments):
 
             if not os.path.isfile(TRAINING_LOG_FILE):
                 with open(TRAINING_LOG_FILE, mode='w') as output:
-                output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
-                output_writer.writeheader()
+                    output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
+                    output_writer.writeheader()
             with open(TRAINING_LOG_FILE, mode='a+') as output:
                 output_writer = csv.DictWriter(output, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields)
                 output_writer.writerow(data)
