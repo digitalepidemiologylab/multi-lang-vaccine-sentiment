@@ -191,8 +191,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train itialisation starting at " + temp_output_dir + "**")
@@ -358,8 +358,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train initialisation starting at " + temp_output_dir + "**")
@@ -523,8 +523,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train itialisation starting at " + temp_output_dir + "**")
@@ -687,8 +687,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train itialisation starting at " + temp_output_dir + "**")
@@ -853,8 +853,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train itialisation starting at " + temp_output_dir + "**")
@@ -1019,8 +1019,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train itialisation starting at " + temp_output_dir + "**")
@@ -1185,8 +1185,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + i + "-" +
-                train_annot_dataset + "--")
+                "-" + args.username + "-" + "it" + str(i) + "-" +
+                train_annot_dataset)
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
             print("**Train itialisation starting at " + temp_output_dir + "**")
