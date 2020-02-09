@@ -53,7 +53,6 @@ TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'
 ##############################
 ####### HYPERPARAMETERS ######
 ##############################
-NUM_TRAIN_EPOCHS = args.epochs
 LEARNING_RATE = 2e-5
 MAX_SEQ_LENGTH = 128
 TRAIN_BATCH_SIZE = 64
@@ -75,10 +74,10 @@ LOWER_CASED = False
 ##############################
 ########### FUNCTIONS ########
 ##############################
-def tpu_init():
+def tpu_init(ip):
     #Set up the TPU
     auth.authenticate_user()
-    tpu_address = 'grpc://' + str(args.ip) + ':8470'
+    tpu_address = 'grpc://' + str(ip) + ':8470'
 
     with tf.Session(tpu_address) as session:
         print('TPU devices:')
@@ -219,11 +218,11 @@ experiment_definitions = {
 ###########################
 
 
-def run_experiment(experiments):
+def run_experiment(experiments,tpu_address,iteration, epochs,username,comment):
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
-    print("Getting ready to run the following experiments for " + str(i) +
+    print("Getting ready to run the following experiments for " + str(iteration) +
           " iterations: " + str(experiment_list))
 
     def get_run_config(output_dir):
@@ -255,7 +254,7 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + str(i) + "-" + "expnr" +
+                "-" + username + "-" + "it" + str(iteration) + "-" + "expnr" +
                 exp_nr + "-" + train_annot_dataset)
 
             print("***** Setting temporary dir " + temp_output_dir + "**")
@@ -269,14 +268,14 @@ def run_experiment(experiments):
                                                    do_lower_case=LOWER_CASED)
 
             tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
-                TPU_ADDRESS)
+                tpu_address)
             processor = vaccineStanceProcessor()
             label_list = processor.get_labels()
 
             train_examples = processor.get_train_examples(
                 os.path.join('data', train_annot_dataset))
             num_train_steps = int(
-                len(train_examples) / TRAIN_BATCH_SIZE * NUM_TRAIN_EPOCHS)
+                len(train_examples) / TRAIN_BATCH_SIZE * epochs)
             num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
 
             #Initiation
@@ -311,7 +310,7 @@ def run_experiment(experiments):
             print('  Num examples = {}'.format(len(train_examples)))
             print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
             print('  Train steps = {}'.format(num_train_steps))
-            print('  Epochs = {}'.format(NUM_TRAIN_EPOCHS))
+            print('  Epochs = {}'.format(epochs))
 
             tf.logging.info('  Num steps = %d', num_train_steps)
             train_input_fn = run_classifier.input_fn_builder(
@@ -382,16 +381,16 @@ def run_experiment(experiments):
             'Experiment_Name': experiment_definitions[exp_nr][
             "name"],
             'Date': format(datetime.datetime.now()),
-            'User': args.username,
+            'User': username,
             'Model': BERT_MODEL_NAME,
             'Train_Annot_Dataset': train_annot_dataset,
             'Eval_Annot_Dataset': eval_annot_dataset,
-            'Num_Train_Epochs': NUM_TRAIN_EPOCHS,
+            'Num_Train_Epochs': epochs,
             'Learning_Rate': LEARNING_RATE,
             'Max_Seq_Length': MAX_SEQ_LENGTH,
             'Eval_Loss': result['eval_loss'],
             'Loss': result['loss'],
-            'Comment': args.comment,
+            'Comment': comment,
             **scores
         }
         datafields = sorted(data.keys())
@@ -415,7 +414,7 @@ def run_experiment(experiments):
 
         print("***** Completed Experiment " + exp_nr + " *******")
 
-    print("***** Completed all experiments in iteration " + i +
+    print("***** Completed all experiments in iteration " + iteration +
           ". We should now clean up all remaining files *****")
     for c in completed_train_dirs:
         print("Please delete these directories: ")
@@ -457,11 +456,11 @@ def main(args):
     args = parse_args(args)
 
     #Initialise the TPUs
-    TPU_ADDRESS = tpu_init(args.ip)
+    tpu_address = tpu_init(args.tpu_ip)
 
-    for i in range(0, args.iterations):
-        run_experiment(args.experiments)
-        print("*** Completed iteration " + str(i + 1))
+    for iteration in range(0, args.iterations):
+        run_experiment(args.experiments, tpu_address, iteration, args.epochs,args.username,args.comment)
+        print("*** Completed iteration " + str(iteration + 1))
 
 if __name__ == "__main__":
     main(sys.argv[1:])
