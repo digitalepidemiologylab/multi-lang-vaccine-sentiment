@@ -400,7 +400,8 @@ def run_experiment(experiments):
         print('Final scores:')
         print(scores)
         print('***** Finished second half of evaluation of {} at {} *****'.
-              format(EXP_NAME, datetime.datetime.now()))
+              format(experiment_definitions[exp_nr][
+            "name"], datetime.datetime.now()))
 
         # Write log to Training Log File
         data = {
