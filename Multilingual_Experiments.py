@@ -168,22 +168,22 @@ experiment_definitions = {
     },
     "7": {
         "name": "translate-cb-annot-de-cb-annot-de",
-        "train_annot_dataset": "cb-annot-de",
+        "train_annot_dataset": "cb-annot-en-de",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "8": {
         "name": "translate-cb-annot-es-cb-annot-es",
-        "train_annot_dataset": "cb-annot-es",
+        "train_annot_dataset": "cb-annot-en-es",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "9": {
         "name": "translate-cb-annot-fr-cb-annot-fr",
-        "train_annot_dataset": "cb-annot-fr",
+        "train_annot_dataset": "cb-annot-en-fr",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "10": {
         "name": "translate-cb-annot-pt-cb-annot-pt",
-        "train_annot_dataset": "cb-annot-pt",
+        "train_annot_dataset": "cb-annot-en-pt",
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "11": {
