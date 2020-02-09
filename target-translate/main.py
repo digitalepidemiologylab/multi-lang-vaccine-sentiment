@@ -19,6 +19,7 @@ from sklearn.metrics import accuracy_score, precision_score, f1_score, recall_sc
 import time
 import argparse
 import uuid
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -63,12 +64,11 @@ class BERTModel(BaseModel):
         self.default_output_folder = 'output'
         self.output_path = self.generate_output_path(args.output_path)
         self.model_path = os.path.join(self.other_path, 'bert')
+        self.all_args = vars(args)
 
     def generate_output_path(self, output_path):
         if output_path is None:
-            output_path = os.path.join(self.default_output_folder, f"{time.strftime('%Y-%m-%d%H-%M-%S')}-{str(uuid.uuid4())[:4]}-{self.username}")
-        if os.path.isdir(output_path):
-            raise Exception('Output directory exists!')
+            output_path = os.path.join(self.default_output_folder, f"{time.strftime('%Y_%m_%d-%-H_%M_%S')}-{str(uuid.uuid4())[:4]}-{self.username}")
         return output_path
 
     def create_dirs(self):
@@ -79,7 +79,6 @@ class BERTModel(BaseModel):
     def train(self):
         # Setup
         self._setup_bert()
-        __import__('pdb').set_trace()
 
         # Prepare optimizer
         param_optimizer = list(self.model.named_parameters())
@@ -104,8 +103,7 @@ class BERTModel(BaseModel):
                 self.optimizer = FP16_Optimizer(self.optimizer, static_loss_scale=self.loss_scale)
         else:
             self.optimizer = AdamW(optimizer_grouped_parameters, lr=self.learning_rate)
-            self.scheduler = get_linear_schedule_with_warmup(self.optimizer, warmup_steps=self.warmup_steps, num_training_steps=self.num_train_optimization_steps)
-
+            self.scheduler = get_linear_schedule_with_warmup(self.optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=self.num_train_optimization_steps)
 
         # Run training
         global_step = 0
@@ -181,12 +179,16 @@ class BERTModel(BaseModel):
         output_config_file = os.path.join(self.output_path, CONFIG_NAME)
         with open(output_config_file, 'w') as f:
             f.write(model_to_save.config.to_json_string())
+        args_output_file = os.path.join(self.output_path, 'args.json')
+        with open(args_output_file, 'w') as f:
+            json.dump(self.all_args, f)
+
 
     def test(self):
         # Setup
         self._setup_bert(setup_mode='test')
         # Run test
-        eval_examples = self.processor.get_dev_examples()
+        eval_examples = self.processor.get_dev_examples(self.dev_data_path)
         eval_features = self.convert_examples_to_features(eval_examples)
         logger.debug("***** Running evaluation *****")
         logger.debug("  Num examples = %d", len(eval_examples))
@@ -219,14 +221,20 @@ class BERTModel(BaseModel):
         result_out = self.performance_metrics(result['label'], result['prediction'], label_mapping=label_mapping)
         if self.write_test_output:
             test_output = self.get_full_test_output(result['prediction'], result['label'], label_mapping=label_mapping,
-                    test_data_path=args.test_data)
+                    test_data_path=self.dev_data_path)
             result_out = {**result_out, **test_output}
         return result_out
 
-    def predict(self, args, data):
+    def save_results(self, results):
+        result_path = os.path.join(self.output_path, 'results.json')
+        logger.info(f'Writing output results to {result_path}...')
+        with open(result_path, 'w') as f:
+            json.dump(results, f)
+
+    def predict(self, data):
         """Predict data (list of strings)"""
         # Setup
-        self._setup_bert(args, setup_mode='predict', data=data)
+        self._setup_bert(setup_mode='predict', data=data)
         # Run predict
         predict_examples = self.processor.get_test_examples(data)
         predict_features = self.convert_examples_to_features(predict_examples)
@@ -251,13 +259,13 @@ class BERTModel(BaseModel):
             result.extend(res)
         return result
 
-    def fine_tune(self, args):
+    def fine_tune(self):
         raise NotImplementedError
-
 
     def _setup_bert(self, setup_mode='train', data=None):
         # Create necessary dirctory structure
-        self.create_dirs()
+        if setup_mode == 'train':
+            self.create_dirs()
 
         # GPU config
         self.device = torch.device("cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu")
@@ -307,14 +315,10 @@ class BERTModel(BaseModel):
                 self.model.half()
         else:
             # Load a trained model and config that you have trained
-            config = BertConfig(os.path.join(self.output_path, CONFIG_NAME))
-            config.output_attentions = self.output_attentions
-            self.model = BertForSequenceClassification(config)
-            self.model.load_state_dict(torch.load(os.path.join(self.output_path, WEIGHTS_NAME)))
+            self.model = BertForSequenceClassification.from_pretrained(self.output_path)
         self.model.to(self.device)
         if self.n_gpu > 1:
             self.model = torch.nn.DataParallel(self.model)
-
 
     def _truncate_seq_pair(self, tokens_a, tokens_b, max_length):
         """Truncates a sequence pair in place to the maximum length."""
@@ -485,7 +489,7 @@ def parse_args(args):
     parser.add_argument('--dev-data', dest='dev_data', help='Data folder with dev.tsv file', default='cb-annot-en')
     parser.add_argument('--test-data', dest='test_data', help='Data folder with test.tsv file', default='cb-annot-en')
     parser.add_argument('--output-path', dest='output_path', help='Path to all output/results', default=None)
-    parser.add_argument('--other-path', dest='other_path', help='Path to other resources', default='.')
+    parser.add_argument('--other-path', dest='other_path', help='Path to other resources', default='other')
     parser.add_argument('--data-path', dest='data_path', help='Path to data', default='../data')
     parser.add_argument('--epochs', help='Number of train epochs', default=3, type=int)
     parser.add_argument('--gradient-accumulation-steps', dest='gradient_accumulation_steps', default=1, type=int)
@@ -510,10 +514,11 @@ def main(args):
     # Parse args
     args = parse_args(args)
 
-    # Train
+    # Run experiments
     bert = BERTModel(args)
     bert.train()
-
+    results = bert.test()
+    bert.save_results(results)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
