@@ -246,6 +246,9 @@ experiment_definitions = {
 
 
 def run_experiment(experiments):
+    #Make sure the freshest dataset is available - This should only copy if there is changes
+    os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
+
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
@@ -269,21 +272,15 @@ def run_experiment(experiments):
     for exp_nr in experiment_list:
         print("***** Starting Experiment " + exp_nr + " *******")
 
-        #Make sure the freshest dataset is available - This should only copy if there is changes
-        os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
-
         ###########################
         ######### TRAINING ########
         ###########################
+
         #We should only train a new model if a similar model hasnt just been trained. Save considerable computation time
         train_annot_dataset = experiment_definitions[exp_nr][
             "train_annot_dataset"]
         if train_annot_dataset != last_completed_train:
-            #Make sure to delete any old temp_output_dir data to not fill up disk space
-            #if(temp_output_dir):
-            #    os.system("gsutil -m rm -r " + temp_output_dir)
-
-            #Set a fresh new output directory every time training starts, and set the cache to this
+            #Set a fresh new output directory every time training starts, and set the cache to this directory
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
@@ -292,7 +289,7 @@ def run_experiment(experiments):
 
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
-            print("**Train starting at " + temp_output_dir + "**")
+            print("***** Train started in " + temp_output_dir + "**")
 
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(
                 BERT_MODEL_DIR, 'vocab.txt'),
@@ -334,7 +331,7 @@ def run_experiment(experiments):
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
 
             print(
-                'Fine tuning BERT base model normally takes a few minutes. Please wait...'
+                '***** Fine tuning BERT base model normally takes a few minutes. Please wait...'
             )
             print('***** Started training using {} at {} *****'.format(
                 train_annot_dataset, datetime.datetime.now()))
@@ -363,14 +360,13 @@ def run_experiment(experiments):
         eval_annot_dataset = experiment_definitions[exp_nr][
             "eval_annot_dataset"]
 
-        EXP_NAME = 'zeroshot-(train)-' + train_annot_dataset + "-(eval)-" + eval_annot_dataset
-
         eval_examples = processor.get_dev_examples(
             os.path.join('data', eval_annot_dataset))
         eval_features = run_classifier.convert_examples_to_features(
             eval_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
         print('***** Started evaluation of {} at {} *****'.format(
-            EXP_NAME, datetime.datetime.now()))
+            experiment_definitions[exp_nr][
+            "name"], datetime.datetime.now()))
         print('Num examples = {}'.format(len(eval_examples)))
         print('Batch size = {}'.format(EVAL_BATCH_SIZE))
 
@@ -385,7 +381,8 @@ def run_experiment(experiments):
 
         print(
             '***** Finished first half of evaluation of {} at {} *****'.format(
-                EXP_NAME, datetime.datetime.now()))
+                experiment_definitions[exp_nr][
+            "name"], datetime.datetime.now()))
 
         output_eval_file = os.path.join(temp_output_dir, 'eval_results.txt')
         with tf.gfile.GFile(output_eval_file, 'w') as writer:
@@ -408,7 +405,8 @@ def run_experiment(experiments):
 
         # Write log to Training Log File
         data = {
-            'Experiment_Name': EXP_NAME,
+            'Experiment_Name': experiment_definitions[exp_nr][
+            "name"],
             'Date': format(datetime.datetime.now()),
             'User': args.username,
             'Model': BERT_MODEL_NAME,
