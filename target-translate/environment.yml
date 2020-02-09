@@ -1,0 +1,14 @@
+name: ml
+channels:
+  - defaults
+dependencies:
+  - pytorch
+  - seaborn
+  - matplotlib
+  - pandas
+  - scikit-learn
+  - python=3.6
+  pip:
+    - transformers
+prefix: /Users/martin/anaconda3/envs/ml
+
