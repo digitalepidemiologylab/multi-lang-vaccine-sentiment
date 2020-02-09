@@ -190,7 +190,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
@@ -357,7 +357,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
@@ -522,7 +522,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
@@ -686,7 +686,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
@@ -852,7 +852,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
@@ -1018,7 +1018,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
@@ -1184,7 +1184,7 @@ def run_experiment(experiments):
             #Set a fresh new output directory every time training starts, and set the cache to this
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4()[0:4]) +
+                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + i + "-" +
                 train_annot_dataset + "--")
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
