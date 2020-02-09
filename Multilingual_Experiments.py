@@ -164,77 +164,77 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 
 experiment_definitions = {
     "1": {
-        "name": "zeroshot--cb-annot-en--cb-annot-en",
+        "name": "zeroshot-cb-annot-en-cb-annot-en",
         "train_annot_dataset": "cb-annot-en",
         "eval_annot_dataset": "cb-annot-en"
     },
     "2": {
-        "name": "zeroshot--cb-annot-en--cb-annot-de",
+        "name": "zeroshot-cb-annot-en-cb-annot-de",
         "train_annot_dataset": "cb-annot-en",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "3": {
-        "name": "zeroshot--cb-annot-en--cb-annot-es",
+        "name": "zeroshot-cb-annot-en-cb-annot-es",
         "train_annot_dataset": "cb-annot-en",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "4": {
-        "name": "zeroshot--cb-annot-en--cb-annot-fr",
+        "name": "zeroshot-cb-annot-en-cb-annot-fr",
         "train_annot_dataset": "cb-annot-en",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "5": {
-        "name": "zeroshot--cb-annot-en--cb-annot-pt",
+        "name": "zeroshot-cb-annot-en-cb-annot-pt",
         "train_annot_dataset": "cb-annot-en",
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "6": {
-        "name": "translate--cb-annot-en--cb-annot-en",
+        "name": "translate-cb-annot-en-cb-annot-en",
         "train_annot_dataset": "cb-annot-en",
         "eval_annot_dataset": "cb-annot-en"
     },
     "7": {
-        "name": "translate--cb-annot-de--cb-annot-de",
+        "name": "translate-cb-annot-de-cb-annot-de",
         "train_annot_dataset": "cb-annot-de",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "8": {
-        "name": "translate--cb-annot-es--cb-annot-es",
+        "name": "translate-cb-annot-es-cb-annot-es",
         "train_annot_dataset": "cb-annot-es",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "9": {
-        "name": "translate--cb-annot-fr--cb-annot-fr",
+        "name": "translate-cb-annot-fr-cb-annot-fr",
         "train_annot_dataset": "cb-annot-fr",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "10": {
-        "name": "translate--cb-annot-pt--cb-annot-pt",
+        "name": "translate-cb-annot-pt-cb-annot-pt",
         "train_annot_dataset": "cb-annot-pt",
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "11": {
-        "name": "multitranslate--cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en"
     },
     "12": {
-        "name": "multitranslate--cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "13": {
-        "name": "multitranslate--cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "14": {
-        "name": "multitranslate--cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "15": {
-        "name": "multitranslate--cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-pt"
     }
