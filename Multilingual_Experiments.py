@@ -48,7 +48,7 @@ BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'
 BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment/trainlog.csv'
+TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment-log/trainlog.csv'
 
 ##############################
 ####### HYPERPARAMETERS ######
