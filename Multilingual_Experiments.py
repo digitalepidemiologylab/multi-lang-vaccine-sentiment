@@ -163,7 +163,7 @@ class vaccineStanceProcessor(run_classifier.DataProcessor):
 ##### DEFINE EXPERIMENTS #####
 ##############################
 
-experiment_definitions = {
+experiment_definition = {
     "1": {
         "name":
         "zeroshot",
@@ -209,19 +209,18 @@ def run_experiment(experiments):
     experiment_list = [x.strip() for x in experiments.split(',')]
 
     def get_run_config(output_dir):
-    return tf.contrib.tpu.RunConfig(
-        cluster=tpu_cluster_resolver,
-        model_dir=output_dir,
-        save_checkpoints_steps=SAVE_CHECKPOINTS_STEPS,
-        tpu_config=tf.contrib.tpu.TPUConfig(
-            iterations_per_loop=ITERATIONS_PER_LOOP,
-            num_shards=NUM_TPU_CORES,
-            per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig.
-            PER_HOST_V2))
+        return tf.contrib.tpu.RunConfig(
+            cluster=tpu_cluster_resolver,
+            model_dir=output_dir,
+            save_checkpoints_steps=SAVE_CHECKPOINTS_STEPS,
+            tpu_config=tf.contrib.tpu.TPUConfig(
+                iterations_per_loop=ITERATIONS_PER_LOOP,
+                num_shards=NUM_TPU_CORES,
+                per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig.
+                PER_HOST_V2))
 
     for exp_nr in experiment_list:
         print("***** Starting Experiment "+exp_nr+" *******")
-
 
 
 if __name__ == "__main__":
