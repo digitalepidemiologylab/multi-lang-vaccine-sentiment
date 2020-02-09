@@ -75,15 +75,17 @@ LOWER_CASED = False
 ##############################
 ########### FUNCTIONS ########
 ##############################
-def tpu_init(tpu_address):
+def tpu_init():
     #Set up the TPU
     auth.authenticate_user()
+    tpu_address = 'grpc://' + str(args.ip) + ':8470'
 
-    with tf.Session('grpc://' + str(tpu_address) + ':8470') as session:
+    with tf.Session(tpu_address) as session:
         print('TPU devices:')
         pprint.pprint(session.list_devices())
-    print('TPU address is active on ', tpu_address)
+    print('TPU address is active on', tpu_address)
 
+    return tpu_address
 
 
 class vaccineStanceProcessor(run_classifier.DataProcessor):
@@ -453,7 +455,9 @@ def parse_args(args):
 
 def main(args):
     args = parse_args(args)
-    tpu_init(args.tpu_ip)
+
+    #Initialise the TPUs
+    TPU_ADDRESS = tpu_init(args.ip)
 
     for i in range(0, args.iterations):
         run_experiment(args.experiments)
