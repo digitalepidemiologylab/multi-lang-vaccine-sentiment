@@ -249,7 +249,7 @@ def run_experiment(experiments):
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
-    print("Getting ready to run the following experiments for " + i +
+    print("Getting ready to run the following experiments for " + str(i) +
           " iterations: " + str(experiment_list))
 
     def get_run_config(output_dir):
