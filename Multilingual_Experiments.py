@@ -40,7 +40,7 @@ import optimization
 import run_classifier
 import run_classifier_with_tfhub
 import tokenization
-d
+
 ##############################
 ########## CONSTANTS #########
 ##############################
