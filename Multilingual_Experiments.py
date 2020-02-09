@@ -3,44 +3,18 @@
 ################################
 import sys, os, json, csv, datetime, pprint, uuid, time, argparse
 
-#Parse commandline
-parser = argparse.ArgumentParser()
-parser.add_argument("ip", help="IP-address of the TPU")
-parser.add_argument(
-    "-username",
-    help="Optional. Username is used in the directory name and in the logfile",
-    default="Anonymous")
-parser.add_argument("-iterations",
-                    help="Number of times the script should run. Default is 1",
-                    default=1,
-                    type=int)
-parser.add_argument(
-    "-experiments",
-    help=
-    "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
-    default="1")
-parser.add_argument("-epochs",
-                    help="Number of train epochs. Default is 3",
-                    default=3,
-                    type=int)
-parser.add_argument(
-    "-comment",
-    help="Optional. Add a Comment to the logfile for internal reference.",
-    default="No Comment")
-args = parser.parse_args()
-
 ###################################
 ##### CLONING BERT AND THE DATA ###
 ###################################
 
-#Clone Data
+# Clone Data
 if not os.path.exists('data'):
     os.makedirs('data')
     os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
 else:
     print('** All training files has already been copied to data')
 
-#Clone Bert
+# Clone Bert
 if not os.path.exists('bert_repo'):
     os.system(
         "test -d bert_repo || git clone https://github.com/google-research/bert bert_repo"
@@ -446,11 +420,50 @@ def run_experiment(experiments):
         print("Please delete these directories: ")
         print("gsutil -m rm -r " + c)
 
+def parse_args(args):
+    # Parse commandline
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--tpu-ip", dest='tpu_ip', default=None, help="IP-address of the TPU")
+    parser.add_argument(
+        "-u",
+        "--username",
+        help="Optional. Username is used in the directory name and in the logfile",
+        default="Anonymous")
+    parser.add_argument(
+        "-i",
+        "--iterations",
+        help="Number of times the script should run. Default is 1",
+        default=1,
+        type=int)
+    parser.add_argument(
+        "-e",
+        "--experiments",
+        help= "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
+        default="1")
+    parser.add_argument(
+        "--epochs",
+        help="Number of train epochs. Default is 3",
+        default=3,
+        type=int)
+    parser.add_argument(
+        "--comment",
+        help="Optional. Add a Comment to the logfile for internal reference.",
+        default="No Comment")
+    args = parser.parse_args()
+    return args
 
-if __name__ == "__main__":
+def main(args):
+    args = parse_args(args)
+
     #Initialise the TPUs
-    TPU_ADDRESS = tpu_init()
+    if args.tpu_ip is None:
+        TPU_ADDRESS = tpu_init()
+    else:
+        TPU_ADDRESS = args.tpu_ip
 
     for i in range(0, args.iterations):
         run_experiment(args.experiments)
         print("*** Completed iteration " + str(i + 1))
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
