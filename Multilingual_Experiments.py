@@ -38,7 +38,7 @@ if not os.path.exists('data'):
     os.makedirs('data')
     os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
 else:
-    print('All training files has already been copied to data')
+    print('** All training files has already been copied to data')
 
 #Clone Bert
 if not os.path.exists('bert_repo'):
@@ -46,7 +46,7 @@ if not os.path.exists('bert_repo'):
         "test -d bert_repo || git clone https://github.com/google-research/bert bert_repo"
     )
 else:
-    print('The Bert repository has already been cloned')
+    print('** The Bert repository has already been cloned')
 
 if not '/content/bert_repo' in sys.path:
     sys.path += ['bert_repo']
@@ -246,9 +246,6 @@ experiment_definitions = {
 
 
 def run_experiment(experiments):
-    #Make sure the freshest dataset is available - This should only copy if there is changes
-    os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
-
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
@@ -286,6 +283,8 @@ def run_experiment(experiments):
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
                 "-" + args.username + "-" + "it" + str(i) + "-" + "expnr" +
                 exp_nr + "-" + train_annot_dataset)
+
+            print("***** Setting temporary dir " + temp_output_dir + "**")
 
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
