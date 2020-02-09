@@ -423,7 +423,7 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
 def parse_args(args):
     # Parse commandline
     parser = argparse.ArgumentParser()
-    parser.add_argument("-u",
+    parser.add_argument("-ip",
                         "--tpu-ip",
                         dest='tpu_ip',
                         default=None,
