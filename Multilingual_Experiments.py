@@ -287,8 +287,8 @@ def run_experiment(experiments):
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + args.username + "-" + "it" + str(i) + "-" + "trainidx" +
-                str(trainidx) + "-" + train_annot_dataset)
+                "-" + args.username + "-" + "it" + str(i) + "-" + "expnr" +
+                exp_nr + "-" + train_annot_dataset)
 
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
 
