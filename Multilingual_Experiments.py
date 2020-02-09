@@ -187,27 +187,27 @@ experiment_definitions = {
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "11": {
-        "name": "multitranslate-cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-en",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en"
     },
     "12": {
-        "name": "multitranslate-cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-escb-annot-de",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "13": {
-        "name": "multitranslate-cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-es",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "14": {
-        "name": "multitranslate-cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-fr",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "15": {
-        "name": "multitranslate-cb-annot-en-de-fr-es",
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-pt",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-pt"
     }
