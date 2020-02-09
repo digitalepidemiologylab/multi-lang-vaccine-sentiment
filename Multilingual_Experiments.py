@@ -218,12 +218,13 @@ experiment_definitions = {
 ###########################
 
 
-def run_experiment(experiments,tpu_address,iteration, epochs,username,comment):
+def run_experiment(experiments, tpu_address, iteration, epochs, username,
+                   comment):
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
-    print("Getting ready to run the following experiments for " + str(iteration) +
-          " iterations: " + str(experiment_list))
+    print("Getting ready to run the following experiments for " +
+          str(iteration) + " iterations: " + str(experiment_list))
 
     def get_run_config(output_dir):
         return tf.contrib.tpu.RunConfig(
@@ -337,8 +338,7 @@ def run_experiment(experiments,tpu_address,iteration, epochs,username,comment):
         eval_features = run_classifier.convert_examples_to_features(
             eval_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
         print('***** Started evaluation of {} at {} *****'.format(
-            experiment_definitions[exp_nr][
-            "name"], datetime.datetime.now()))
+            experiment_definitions[exp_nr]["name"], datetime.datetime.now()))
         print('Num examples = {}'.format(len(eval_examples)))
         print('Batch size = {}'.format(EVAL_BATCH_SIZE))
 
@@ -353,8 +353,8 @@ def run_experiment(experiments,tpu_address,iteration, epochs,username,comment):
 
         print(
             '***** Finished first half of evaluation of {} at {} *****'.format(
-                experiment_definitions[exp_nr][
-            "name"], datetime.datetime.now()))
+                experiment_definitions[exp_nr]["name"],
+                datetime.datetime.now()))
 
         output_eval_file = os.path.join(temp_output_dir, 'eval_results.txt')
         with tf.gfile.GFile(output_eval_file, 'w') as writer:
@@ -373,13 +373,12 @@ def run_experiment(experiments,tpu_address,iteration, epochs,username,comment):
         print('Final scores:')
         print(scores)
         print('***** Finished second half of evaluation of {} at {} *****'.
-              format(experiment_definitions[exp_nr][
-            "name"], datetime.datetime.now()))
+              format(experiment_definitions[exp_nr]["name"],
+                     datetime.datetime.now()))
 
         # Write log to Training Log File
         data = {
-            'Experiment_Name': experiment_definitions[exp_nr][
-            "name"],
+            'Experiment_Name': experiment_definitions[exp_nr]["name"],
             'Date': format(datetime.datetime.now()),
             'User': username,
             'Model': BERT_MODEL_NAME,
@@ -420,14 +419,20 @@ def run_experiment(experiments,tpu_address,iteration, epochs,username,comment):
         print("Please delete these directories: ")
         print("gsutil -m rm -r " + c)
 
+
 def parse_args(args):
     # Parse commandline
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tpu-ip", dest='tpu_ip', default=None, help="IP-address of the TPU")
+    parser.add_argument("-u",
+                        "--tpu-ip",
+                        dest='tpu_ip',
+                        default=None,
+                        help="IP-address of the TPU")
     parser.add_argument(
         "-u",
         "--username",
-        help="Optional. Username is used in the directory name and in the logfile",
+        help=
+        "Optional. Username is used in the directory name and in the logfile",
         default="Anonymous")
     parser.add_argument(
         "-i",
@@ -438,19 +443,20 @@ def parse_args(args):
     parser.add_argument(
         "-e",
         "--experiments",
-        help= "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
+        help=
+        "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
         default="1")
-    parser.add_argument(
-        "--epochs",
-        help="Number of train epochs. Default is 3",
-        default=3,
-        type=int)
+    parser.add_argument("--epochs",
+                        help="Number of train epochs. Default is 3",
+                        default=3,
+                        type=int)
     parser.add_argument(
         "--comment",
         help="Optional. Add a Comment to the logfile for internal reference.",
         default="No Comment")
     args = parser.parse_args()
     return args
+
 
 def main(args):
     args = parse_args(args)
@@ -459,8 +465,10 @@ def main(args):
     tpu_address = tpu_init(args.tpu_ip)
 
     for iteration in range(0, args.iterations):
-        run_experiment(args.experiments, tpu_address, iteration, args.epochs,args.username,args.comment)
+        run_experiment(args.experiments, tpu_address, iteration, args.epochs,
+                       args.username, args.comment)
         print("*** Completed iteration " + str(iteration + 1))
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
