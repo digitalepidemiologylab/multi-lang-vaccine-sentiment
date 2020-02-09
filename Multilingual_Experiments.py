@@ -413,7 +413,7 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
 
         print("***** Completed Experiment " + exp_nr + " *******")
 
-    print("***** Completed all experiments in iteration " + iteration +
+    print("***** Completed all experiments in iteration " + str(iteration) +
           ". We should now clean up all remaining files *****")
     for c in completed_train_dirs:
         print("Please delete these directories: ")
