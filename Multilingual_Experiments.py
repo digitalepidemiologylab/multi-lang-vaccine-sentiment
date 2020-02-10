@@ -218,7 +218,7 @@ experiment_definitions = {
 ###########################
 
 
-def run_experiment(experiments, tpu_address, repeat, iterations, username,
+def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
                    comment):
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
@@ -275,7 +275,6 @@ def run_experiment(experiments, tpu_address, repeat, iterations, username,
 
             train_examples = processor.get_train_examples(
                 os.path.join('data', train_annot_dataset))
-            num_train_steps = iterations
             num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
 
             #Initiation
@@ -310,7 +309,7 @@ def run_experiment(experiments, tpu_address, repeat, iterations, username,
             print('  Num examples = {}'.format(len(train_examples)))
             print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
             print('  Train steps = {}'.format(num_train_steps))
-            print('  Iterations = {}'.format(iterations))
+            print('  Number of training steps = {}'.format(num_train_steps))
 
             tf.logging.info('  Num steps = %d', num_train_steps)
             train_input_fn = run_classifier.input_fn_builder(
@@ -381,7 +380,7 @@ def run_experiment(experiments, tpu_address, repeat, iterations, username,
             'Date': format(datetime.datetime.now()),
             'User': username,
             'Model': BERT_MODEL_NAME,
-            'Num_Train_Iterations': iterations,
+            'Num_Train_Steps': num_train_steps,
             'Train_Annot_Dataset': train_annot_dataset,
             'Eval_Annot_Dataset': eval_annot_dataset,
             'Learning_Rate': LEARNING_RATE,
@@ -445,8 +444,8 @@ def parse_args(args):
         help=
         "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
         default="1")
-    parser.add_argument("--iterations",
-                        help="Number of train iterations. Default is 100",
+    parser.add_argument("-","--num_train_steps",
+                        help="Number of train steps. Default is 100",
                         default=100,
                         type=int)
     parser.add_argument(
@@ -464,7 +463,7 @@ def main(args):
     tpu_address = tpu_init(args.tpu_ip)
 
     for repeat in range(args.repeats):
-        run_experiment(args.experiments, tpu_address, repeat+1, args.iterations,
+        run_experiment(args.experiments, tpu_address, repeat+1, args.num_train_steps,
                        args.username, args.comment)
         print("*** Completed repeats " + str(repeat + 1))
 
