@@ -48,7 +48,7 @@ BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'
 BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment-log/trainlog.csv'
+TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment-log/fulltrainlog.csv'
 
 ##############################
 ####### HYPERPARAMETERS ######
@@ -218,13 +218,13 @@ experiment_definitions = {
 ###########################
 
 
-def run_experiment(experiments, tpu_address, iteration, epochs, username,
+def run_experiment(experiments, tpu_address, repeat, iterations, username,
                    comment):
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
     print("Getting ready to run the following experiments for " +
-          str(iteration) + " iterations: " + str(experiment_list))
+          str(repeat) + " repeats: " + str(experiment_list))
 
     def get_run_config(output_dir):
         return tf.contrib.tpu.RunConfig(
@@ -255,7 +255,7 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,
                 time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + username + "-" + "it" + str(iteration) + "-" + "expnr" +
+                "-" + username + "-" + "it" + str(repeat) + "-" + "expnr" +
                 exp_nr + "-" + train_annot_dataset)
 
             print("***** Setting temporary dir " + temp_output_dir + "**")
@@ -275,8 +275,7 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
 
             train_examples = processor.get_train_examples(
                 os.path.join('data', train_annot_dataset))
-            num_train_steps = int(
-                len(train_examples) / TRAIN_BATCH_SIZE * epochs)
+            num_train_steps = iterations
             num_warmup_steps = int(num_train_steps * WARMUP_PROPORTION)
 
             #Initiation
@@ -311,7 +310,7 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
             print('  Num examples = {}'.format(len(train_examples)))
             print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
             print('  Train steps = {}'.format(num_train_steps))
-            print('  Epochs = {}'.format(epochs))
+            print('  Iterations = {}'.format(iterations))
 
             tf.logging.info('  Num steps = %d', num_train_steps)
             train_input_fn = run_classifier.input_fn_builder(
@@ -382,9 +381,9 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
             'Date': format(datetime.datetime.now()),
             'User': username,
             'Model': BERT_MODEL_NAME,
+            'Num_Train_Iterations': iterations,
             'Train_Annot_Dataset': train_annot_dataset,
             'Eval_Annot_Dataset': eval_annot_dataset,
-            'Num_Train_Epochs': epochs,
             'Learning_Rate': LEARNING_RATE,
             'Max_Seq_Length': MAX_SEQ_LENGTH,
             'Eval_Loss': result['eval_loss'],
@@ -413,10 +412,10 @@ def run_experiment(experiments, tpu_address, iteration, epochs, username,
 
         print("***** Completed Experiment " + exp_nr + " *******")
 
-    print("***** Completed all experiments in iteration " + str(iteration) +
-          ". We should now clean up all remaining files *****")
+    print("***** Completed all experiments in " + str(repeat) +
+          "repeats. We should now clean up all remaining files *****")
     for c in completed_train_dirs:
-        print("Please delete these directories: ")
+        print("Deleting these directories: ")
         print("gsutil -m rm -r " + c)
 
 
@@ -435,8 +434,8 @@ def parse_args(args):
         "Optional. Username is used in the directory name and in the logfile",
         default="Anonymous")
     parser.add_argument(
-        "-i",
-        "--iterations",
+        "-r",
+        "--repeats",
         help="Number of times the script should run. Default is 1",
         default=1,
         type=int)
@@ -446,9 +445,9 @@ def parse_args(args):
         help=
         "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
         default="1")
-    parser.add_argument("--epochs",
-                        help="Number of train epochs. Default is 3",
-                        default=3,
+    parser.add_argument("--iterations",
+                        help="Number of train iterations. Default is 100",
+                        default=100,
                         type=int)
     parser.add_argument(
         "--comment",
@@ -464,10 +463,10 @@ def main(args):
     #Initialise the TPUs
     tpu_address = tpu_init(args.tpu_ip)
 
-    for iteration in range(0, args.iterations):
-        run_experiment(args.experiments, tpu_address, iteration, args.epochs,
+    for repeat in range(args.repeats):
+        run_experiment(args.experiments, tpu_address, repeat, args.iterations,
                        args.username, args.comment)
-        print("*** Completed iteration " + str(iteration + 1))
+        print("*** Completed repeats " + str(repeat + 1))
 
 
 if __name__ == "__main__":
