@@ -464,11 +464,11 @@ def main(args):
     tpu_address = tpu_init(args.tpu_ip)
 
     for repeat in range(args.repeats):
-        run_experiment(args.experiments, tpu_address, repeat, args.iterations,
+        run_experiment(args.experiments, tpu_address, repeat+1, args.iterations,
                        args.username, args.comment)
         print("*** Completed repeats " + str(repeat + 1))
 
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-    
+
