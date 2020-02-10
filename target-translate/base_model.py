@@ -9,22 +9,22 @@ class BaseModel:
     def __init__(self):
         self.model_state = {}
 
-    def train(self, args):
+    def train(self):
         raise NotImplementedError
 
-    def test(self, args):
+    def test(self):
         raise NotImplementedError
 
-    def predict(self, args, data):
+    def predict(self, data):
         raise NotImplementedError
 
-    def fine_tune(self, args):
+    def fine_tune(self):
         raise NotImplementedError
 
-    def generate_text(self, seed, args):
+    def generate_text(self, seed):
         raise NotImplementedError
 
-    def get_label_mapping(self, args):
+    def get_label_mapping(self):
         label_mapping_path = os.path.join(self.output_path, 'label_mapping.pkl')
         try:
             with open(label_mapping_path, 'rb') as f:
