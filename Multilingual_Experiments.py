@@ -210,7 +210,7 @@ experiment_definitions = {
         "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-pt",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-pt"
-    }
+    },
     "16": {
         "name": "zeroshot-cb-annot-en-cb-annot-en-sm",
         "train_annot_dataset": "cb-annot-en",
@@ -519,7 +519,7 @@ def parse_args(args):
         help=
         "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
         default="1")
-    parser.add_argument("-","--num_train_steps",
+    parser.add_argument("-n","--num_train_steps",
                         help="Number of train steps. Default is 100",
                         default=100,
                         type=int)
