@@ -211,6 +211,81 @@ experiment_definitions = {
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-pt"
     }
+    "16": {
+        "name": "zeroshot-cb-annot-en-cb-annot-en-sm",
+        "train_annot_dataset": "cb-annot-en",
+        "eval_annot_dataset": "cb-annot-en"
+    },
+    "17": {
+        "name": "zeroshot-cb-annot-en-cb-annot-de-sm",
+        "train_annot_dataset": "cb-annot-en",
+        "eval_annot_dataset": "cb-annot-en-de"
+    },
+    "18": {
+        "name": "zeroshot-cb-annot-en-cb-annot-es-sm",
+        "train_annot_dataset": "cb-annot-en",
+        "eval_annot_dataset": "cb-annot-en-es"
+    },
+    "19": {
+        "name": "zeroshot-cb-annot-en-cb-annot-fr-sm",
+        "train_annot_dataset": "cb-annot-en",
+        "eval_annot_dataset": "cb-annot-en-fr"
+    },
+    "20": {
+        "name": "zeroshot-cb-annot-en-cb-annot-pt-sm",
+        "train_annot_dataset": "cb-annot-en",
+        "eval_annot_dataset": "cb-annot-en-pt"
+    },
+    "21": {
+        "name": "translate-cb-annot-en-cb-annot-en-sm",
+        "train_annot_dataset": "cb-annot-en",
+        "eval_annot_dataset": "cb-annot-en"
+    },
+    "22": {
+        "name": "translate-cb-annot-de-cb-annot-de-sm",
+        "train_annot_dataset": "cb-annot-en-de",
+        "eval_annot_dataset": "cb-annot-en-de"
+    },
+    "23": {
+        "name": "translate-cb-annot-es-cb-annot-es-sm",
+        "train_annot_dataset": "cb-annot-en-es",
+        "eval_annot_dataset": "cb-annot-en-es"
+    },
+    "24": {
+        "name": "translate-cb-annot-fr-cb-annot-fr-sm",
+        "train_annot_dataset": "cb-annot-en-fr",
+        "eval_annot_dataset": "cb-annot-en-fr"
+    },
+    "25": {
+        "name": "translate-cb-annot-pt-cb-annot-pt-sm",
+        "train_annot_dataset": "cb-annot-en-pt",
+        "eval_annot_dataset": "cb-annot-en-pt"
+    },
+    "26": {
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-en-sm",
+        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "eval_annot_dataset": "cb-annot-en"
+    },
+    "27": {
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-de-sm",
+        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "eval_annot_dataset": "cb-annot-en-de"
+    },
+    "28": {
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-es-sm",
+        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "eval_annot_dataset": "cb-annot-en-es"
+    },
+    "29": {
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-fr-sm",
+        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "eval_annot_dataset": "cb-annot-en-fr"
+    },
+    "30": {
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-pt-sm",
+        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "eval_annot_dataset": "cb-annot-en-pt"
+    }
 }
 
 ###########################
@@ -422,7 +497,7 @@ def parse_args(args):
     # Parse commandline
     parser = argparse.ArgumentParser()
     parser.add_argument("-ip",
-                        "--tpu-ip",
+                        "--tpu_ip",
                         dest='tpu_ip',
                         default=None,
                         help="IP-address of the TPU")
