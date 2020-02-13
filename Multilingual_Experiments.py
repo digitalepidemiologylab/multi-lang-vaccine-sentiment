@@ -192,7 +192,7 @@ experiment_definitions = {
         "eval_annot_dataset": "cb-annot-en"
     },
     "12": {
-        "name": "multitranslate-cb-annot-en-de-fr-escb-annot-de",
+        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-de",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-de"
     },
