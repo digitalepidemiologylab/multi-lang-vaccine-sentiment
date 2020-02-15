@@ -207,83 +207,133 @@ experiment_definitions = {
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "15": {
-        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-pt",
+        "name": "multitranslate-small-cb-annot-en-de-fr-es-cb-annot-pt",
         "train_annot_dataset": "cb-annot-en-de-fr-es",
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "16": {
-        "name": "zeroshot-cb-annot-en-cb-annot-en-sm",
-        "train_annot_dataset": "cb-annot-en",
+        "name": "zeroshot-small-cb-annot-en-sm-cb-annot-en",
+        "train_annot_dataset": "cb-annot-en-sm",
         "eval_annot_dataset": "cb-annot-en"
     },
     "17": {
-        "name": "zeroshot-cb-annot-en-cb-annot-de-sm",
-        "train_annot_dataset": "cb-annot-en",
+        "name": "zeroshot-small-cb-annot-en-sm-cb-annot-de",
+        "train_annot_dataset": "cb-annot-en-sm",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "18": {
-        "name": "zeroshot-cb-annot-en-cb-annot-es-sm",
-        "train_annot_dataset": "cb-annot-en",
+        "name": "zeroshot-small-cb-annot-en-sm-cb-annot-es",
+        "train_annot_dataset": "cb-annot-en-sm",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "19": {
-        "name": "zeroshot-cb-annot-en-cb-annot-fr-sm",
-        "train_annot_dataset": "cb-annot-en",
+        "name": "zeroshot-small-cb-annot-en-sm-cb-annot-fr",
+        "train_annot_dataset": "cb-annot-en-sm",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "20": {
-        "name": "zeroshot-cb-annot-en-cb-annot-pt-sm",
-        "train_annot_dataset": "cb-annot-en",
+        "name": "zeroshot-small-cb-annot-en-sm-cb-annot-pt",
+        "train_annot_dataset": "cb-annot-en-sm",
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "21": {
-        "name": "translate-cb-annot-en-cb-annot-en-sm",
-        "train_annot_dataset": "cb-annot-en",
+        "name": "translate-small-cb-annot-en-sm-cb-annot-en",
+        "train_annot_dataset": "cb-annot-en-sm",
         "eval_annot_dataset": "cb-annot-en"
     },
     "22": {
-        "name": "translate-cb-annot-de-cb-annot-de-sm",
-        "train_annot_dataset": "cb-annot-en-de",
+        "name": "translate-small-cb-annot-de-sm-cb-annot-de",
+        "train_annot_dataset": "cb-annot-en-de-sm",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "23": {
-        "name": "translate-cb-annot-es-cb-annot-es-sm",
-        "train_annot_dataset": "cb-annot-en-es",
+        "name": "translate-small-cb-annot-es-sm-cb-annot-es",
+        "train_annot_dataset": "cb-annot-en-es-sm",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "24": {
-        "name": "translate-cb-annot-fr-cb-annot-fr-sm",
-        "train_annot_dataset": "cb-annot-en-fr",
+        "name": "translate-small-cb-annot-fr-sm-cb-annot-fr",
+        "train_annot_dataset": "cb-annot-en-fr-sm",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "25": {
-        "name": "translate-cb-annot-pt-cb-annot-pt-sm",
-        "train_annot_dataset": "cb-annot-en-pt",
+        "name": "translate-small-cb-annot-pt-sm-cb-annot-pt",
+        "train_annot_dataset": "cb-annot-en-pt-sm",
         "eval_annot_dataset": "cb-annot-en-pt"
     },
     "26": {
-        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-en-sm",
-        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "name": "multitranslate-small-cb-annot-en-de-fr-es-cb-sm-annot-en",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-sm",
         "eval_annot_dataset": "cb-annot-en"
     },
     "27": {
-        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-de-sm",
-        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "name": "multitranslate-small-cb-annot-en-de-fr-es-sm-cb-annot-de",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-sm",
         "eval_annot_dataset": "cb-annot-en-de"
     },
     "28": {
-        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-es-sm",
-        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "name": "multitranslate-small-cb-annot-en-de-fr-es-sm-cb-annot-es",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-sm",
         "eval_annot_dataset": "cb-annot-en-es"
     },
     "29": {
-        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-fr-sm",
-        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "name": "multitranslate-small-cb-annot-en-de-fr-es-sm-cb-annot-fr",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-sm",
         "eval_annot_dataset": "cb-annot-en-fr"
     },
     "30": {
-        "name": "multitranslate-cb-annot-en-de-fr-es-cb-annot-pt-sm",
-        "train_annot_dataset": "cb-annot-en-de-fr-es",
+        "name": "multitranslate-small-cb-annot-en-de-fr-es-sm-cb-annot-pt",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-sm",
+        "eval_annot_dataset": "cb-annot-en-pt"
+    },
+    "31": {
+        "name": "balanced-cb-annot-en-de-fr-es-os-cb-annot-en",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-os",
+        "eval_annot_dataset": "cb-annot-en"
+    },
+    "32": {
+        "name": "balanced-cb-annot-en-de-fr-es-os-cb-annot-de",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-os",
+        "eval_annot_dataset": "cb-annot-en-de"
+    },
+    "33": {
+        "name": "balanced-cb-annot-en-de-fr-es-os-cb-annot-es",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-os",
+        "eval_annot_dataset": "cb-annot-en-es"
+    },
+    "34": {
+        "name": "balanced-cb-annot-en-de-fr-es-os-cb-annot-fr",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-os",
+        "eval_annot_dataset": "cb-annot-en-fr"
+    },
+    "35": {
+        "name": "balanced-cb-annot-en-de-fr-es-os-cb-annot-pt",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-os",
+        "eval_annot_dataset": "cb-annot-en-pt"
+    },
+    "36": {
+        "name": "balanced-cb-annot-en-de-fr-es-us-cb-annot-en",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-us",
+        "eval_annot_dataset": "cb-annot-en"
+    },
+    "37": {
+        "name": "balanced-cb-annot-en-de-fr-es-us-cb-annot-de",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-us",
+        "eval_annot_dataset": "cb-annot-en-de"
+    },
+    "38": {
+        "name": "balanced-cb-annot-en-de-fr-es-us-cb-annot-es",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-us",
+        "eval_annot_dataset": "cb-annot-en-es"
+    },
+    "39": {
+        "name": "balanced-cb-annot-en-de-fr-es-us-cb-annot-fr",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-us",
+        "eval_annot_dataset": "cb-annot-en-fr"
+    },
+    "40": {
+        "name": "balanced-cb-annot-en-de-fr-es-us-cb-annot-pt",
+        "train_annot_dataset": "cb-annot-en-de-fr-es-us",
         "eval_annot_dataset": "cb-annot-en-pt"
     }
 }
