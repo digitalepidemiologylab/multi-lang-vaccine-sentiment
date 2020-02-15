@@ -82,9 +82,12 @@ This repository contains code & notebooks for different approaches to training m
 
 | Experiment name | Description | Pre-trained model | Domain pre-training | Classifier training | Evaluation dataset | Accuracy | F1-macro |
 | ------------- | ------------| ------------------| ------------------- | ------------------- |  ------- | -------- | -------- |
-| `zeroshot-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en` | `cb-annot-de` | - | - |
-| `translated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de` | `cb-annot-de` | - | - |
-| `multitranslated-en-de` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de-fr-es` | `cb-annot-de` | - | - |
+| `zeroshot-en-*` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en(/-sm)` | `cb-annot-*` | - | - |
+| `translated-en-*` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-*(/-sm)` | `cb-annot-*` | - | - |
+| `multitranslated-en-*` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de-fr-es(/-sm)` | `cb-annot-*` | - | - |
+| `balanced-en-*` | - | `bert-base-multilingual-uncased`  | - | `cb-annot-en-de-fr-es-(us/os)` | `cb-annot-*` | - | - |
+
+
 
 ### Training set distribution
 | Class | Number | Percentage |
