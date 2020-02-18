@@ -367,7 +367,8 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
 
     for exp_nr in experiment_list:
         print("***** Starting Experiment " + exp_nr + " *******")
-
+        print("***** "+experiment_definitions[exp_nr]+" ******")
+        print("***********************************************")
         ###########################
         ######### TRAINING ########
         ###########################
