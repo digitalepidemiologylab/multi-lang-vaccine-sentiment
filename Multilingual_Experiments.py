@@ -369,6 +369,8 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         print("***** Starting Experiment " + exp_nr + " *******")
         print("***** "+experiment_definitions[exp_nr]['name']+" ******")
         print("***********************************************")
+        #Get a unique ID for every experiment run
+        experiment_id = uuid.uuid4()
         ###########################
         ######### TRAINING ########
         ###########################
@@ -376,13 +378,12 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         #We should only train a new model if a similar model hasnt just been trained. Save considerable computation time
         train_annot_dataset = experiment_definitions[exp_nr][
             "train_annot_dataset"]
+
+        
         if train_annot_dataset != last_completed_train:
             #Set a fresh new output directory every time training starts, and set the cache to this directory
             temp_output_dir = os.path.join(
-                TEMP_OUTPUT_BASEDIR,
-                time.strftime('%Y-%m-%d%H:%M:%S') + str(uuid.uuid4())[0:4] +
-                "-" + username + "-" + "it" + str(repeat) + "-" + "expnr" +
-                exp_nr + "-" + train_annot_dataset)
+                TEMP_OUTPUT_BASEDIR,experiment_id)
 
             print("***** Setting temporary dir " + temp_output_dir + "**")
 
@@ -503,6 +504,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         # Write log to Training Log File
         data = {
             'Experiment_Name': experiment_definitions[exp_nr]["name"],
+            'Experiment_Id':experiment_id,
             'Date': format(datetime.datetime.now()),
             'User': username,
             'Model': BERT_MODEL_NAME,
@@ -542,7 +544,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
     for c in completed_train_dirs:
         print("Deleting these directories: ")
         print("gsutil -m rm -r " + c)
-
+        os.system("gsutil -m rm -r " + c)
 
 def parse_args(args):
     # Parse commandline
