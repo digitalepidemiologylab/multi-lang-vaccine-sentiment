@@ -1,6 +1,8 @@
+import numpy as np
+import sklearn.metrics
+
 #Define some custom functions
 def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapping=None):
-    import sklearn.metrics
     """
     Compute performance metrics
     """
@@ -39,3 +41,22 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
         elif m == 'f1':
             _compute_performance_metric(sklearn.metrics.f1_score, m, y_true, y_pred)
     return scores
+
+def get_full_output(probabilities, y_true, label_mapping=None):
+    results = []
+    probabilities = np.array(probabilities)
+    assert len(probabilities) == len(y_true)
+    for i in range(len(probabilities)):
+        sorted_ids = np.argsort(-probabilities[i])
+        if label_mapping is None:
+            labels = sorted_ids
+        else:
+            labels = [label_mapping[s] for s in sorted_ids]
+        results.append({
+            'prediction': labels[0],
+            'predictions': labels,
+            'y_true': y_true[i],
+            'probability': probabilities[i][sorted_ids][0],
+            'probabilities': probabilities[i][sorted_ids]
+            })
+    return results

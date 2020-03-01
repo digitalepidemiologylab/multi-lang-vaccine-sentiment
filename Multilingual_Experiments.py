@@ -30,7 +30,7 @@ if not '/content/bert_repo' in sys.path:
 ###################################
 from google.colab import auth
 from google.colab import drive
-from vac_utils import performance_metrics
+from vac_utils import performance_metrics, get_full_output
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
@@ -40,6 +40,7 @@ import optimization
 import run_classifier
 import run_classifier_with_tfhub
 import tokenization
+import pandas as pd
 
 ##############################
 ########## CONSTANTS #########
@@ -49,6 +50,7 @@ BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment-log/fulltrainlog.csv'
+FULL_OUTPUT_DIR = '/home/per/multi-lang-vaccine-sentiment-log/full_output'
 
 ##############################
 ####### HYPERPARAMETERS ######
@@ -489,7 +491,8 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
                 writer.write('%s = %s\n' % (key, str(result[key])))
 
         predictions = estimator.predict(eval_input_fn)
-        y_pred = [np.argmax(p['probabilities']) for p in predictions]
+        probabilities = np.array([p['probabilities'] for p in predictions])
+        y_pred = np.argmax(probabilities, axis=1)
         y_true = [e.label_id for e in eval_features]
         label_mapping = dict(zip(range(len(label_list)), label_list))
         scores = performance_metrics(y_true,
@@ -500,6 +503,12 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         print('***** Finished second half of evaluation of {} at {} *****'.
               format(experiment_definitions[exp_nr]["name"],
                      datetime.datetime.now()))
+
+        # get full test output
+        full_output = get_full_output(probabilities, y_true, label_mapping=label_mapping)
+        full_output = pd.DataFrame(full_output)
+        f_path = os.path.join(FULL_OUTPUT_DIR, f'{experiment_id}.csv')
+        full_output.to_csv(f_path, index=False)
 
         # Write log to Training Log File
         data = {
