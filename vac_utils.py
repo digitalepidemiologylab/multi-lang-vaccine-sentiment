@@ -42,9 +42,12 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
             _compute_performance_metric(sklearn.metrics.f1_score, m, y_true, y_pred)
     return scores
 
-def get_full_output(probabilities, y_true, label_mapping=None):
-    results = []
+def get_predictions_output(experiment_id, probabilities, y_true, label_mapping=None):
     probabilities = np.array(probabilities)
+    output = {'Experiment_Id': experiment_id}
+    other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
+    for col in other_cols:
+        output[col] = []
     assert len(probabilities) == len(y_true)
     for i in range(len(probabilities)):
         sorted_ids = np.argsort(-probabilities[i])
@@ -52,11 +55,23 @@ def get_full_output(probabilities, y_true, label_mapping=None):
             labels = sorted_ids
         else:
             labels = [label_mapping[s] for s in sorted_ids]
-        results.append({
-            'prediction': labels[0],
-            'predictions': labels,
-            'y_true': y_true[i],
-            'probability': probabilities[i][sorted_ids][0],
-            'probabilities': probabilities[i][sorted_ids]
-            })
-    return results
+        output['prediction'].append(labels[0])
+        output['predictions'].append(labels)
+        output['y_true'].append(y_true[i])
+        output['probability'].append(probabilities[i][sorted_ids][0])
+        output['probabilities'].append(probabilities[i][sorted_ids])
+    return output
+
+def append_to_csv(data, f_name):
+    datafields = sorted(data.keys())
+    def _get_dict_writer(f):
+        return csv.DictWriter(f, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, fieldnames=datafields) 
+    if not os.path.isfile(f_name):
+        with open(f_name, mode='w') as f:
+            output_writer = _get_dict_writer(f)
+            output_writer.writeheader()
+    with open(f_name, mode='a+') as f:
+        output_writer = _get_dict_writer(f)
+        output_writer.writerow(data)
+        print("Wrote log to csv-file")
+

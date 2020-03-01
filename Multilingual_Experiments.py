@@ -30,7 +30,7 @@ if not '/content/bert_repo' in sys.path:
 ###################################
 from google.colab import auth
 from google.colab import drive
-from vac_utils import performance_metrics, get_full_output
+from vac_utils import performance_metrics, get_predictions_output, append_to_csv
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
@@ -40,7 +40,6 @@ import optimization
 import run_classifier
 import run_classifier_with_tfhub
 import tokenization
-import pandas as pd
 
 ##############################
 ########## CONSTANTS #########
@@ -50,7 +49,12 @@ BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
 TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment-log/fulltrainlog.csv'
-FULL_OUTPUT_DIR = '/home/per/multi-lang-vaccine-sentiment-log/full_output'
+PREDICTIONS_TRAIN_DIR = '/home/per/multi-lang-vaccine-sentiment-log/predictions_train.csv'
+PREDICTIONS_DEV_DIR = '/home/per/multi-lang-vaccine-sentiment-log/predictions_dev.csv'
+PREDICTIONS_TEST_DIR = '/home/per/multi-lang-vaccine-sentiment-log/predictions_test.csv'
+HIDDEN_STATE_TRAIN_DIR = '/home/per/multi-lang-vaccine-sentiment-log/hidden_state_train.csv'
+HIDDEN_STATE_DEV_DIR = '/home/per/multi-lang-vaccine-sentiment-log/hidden_state_dev.csv'
+HIDDEN_STATE_TEST_DIR = '/home/per/multi-lang-vaccine-sentiment-log/hidden_state_test.csv'
 
 ##############################
 ####### HYPERPARAMETERS ######
@@ -454,6 +458,13 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
             last_completed_train = train_annot_dataset
             completed_train_dirs.append(temp_output_dir)
 
+            # write full train prediction output
+            predictions = estimator.predict(train_input_fn)
+            probabilities = np.array([p['probabilities'] for p in predictions])
+            y_true = [e.label_id for e in train_features]
+            predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
+            append_to_csv(predictions_output, PREDICTIONS_TRAIN_DIR)
+
         #############################
         ######### EVALUATING ########
         #############################
@@ -504,11 +515,9 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
               format(experiment_definitions[exp_nr]["name"],
                      datetime.datetime.now()))
 
-        # get full test output
-        full_output = get_full_output(probabilities, y_true, label_mapping=label_mapping)
-        full_output = pd.DataFrame(full_output)
-        f_path = os.path.join(FULL_OUTPUT_DIR, f'{experiment_id}.csv')
-        full_output.to_csv(f_path, index=False)
+        # write full dev prediction output
+        predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
+        append_to_csv(predictions_output, PREDICTIONS_DEV_DIR)
 
         # Write log to Training Log File
         data = {
@@ -527,25 +536,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
             'Comment': comment,
             **scores
         }
-        datafields = sorted(data.keys())
-
-        if not os.path.isfile(TRAINING_LOG_FILE):
-            with open(TRAINING_LOG_FILE, mode='w') as output:
-                output_writer = csv.DictWriter(output,
-                                               delimiter=',',
-                                               quotechar='"',
-                                               quoting=csv.QUOTE_MINIMAL,
-                                               fieldnames=datafields)
-                output_writer.writeheader()
-        with open(TRAINING_LOG_FILE, mode='a+') as output:
-            output_writer = csv.DictWriter(output,
-                                           delimiter=',',
-                                           quotechar='"',
-                                           quoting=csv.QUOTE_MINIMAL,
-                                           fieldnames=datafields)
-            output_writer.writerow(data)
-            print("Wrote log to csv-file")
-
+        append_to_csv(data, TRAINING_LOG_FILE)
         print("***** Completed Experiment " + exp_nr + " *******")
 
     print("***** Completed all experiments in " + str(repeat) +
