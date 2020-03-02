@@ -376,7 +376,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         print("***** "+experiment_definitions[exp_nr]['name']+" ******")
         print("***********************************************")
         #Get a unique ID for every experiment run
-        experiment_id = uuid.uuid4()
+        experiment_id = str(uuid.uuid4())
         ###########################
         ######### TRAINING ########
         ###########################
