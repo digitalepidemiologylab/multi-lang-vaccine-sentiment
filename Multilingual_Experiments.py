@@ -405,6 +405,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
                 tpu_address)
             processor = vaccineStanceProcessor()
             label_list = processor.get_labels()
+            label_mapping = dict(zip(range(len(label_list)), label_list))
 
             train_examples = processor.get_train_examples(
                 os.path.join('data', train_annot_dataset))
@@ -458,12 +459,20 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
             last_completed_train = train_annot_dataset
             completed_train_dirs.append(temp_output_dir)
 
-            # write full train prediction output
-            predictions = estimator.predict(train_input_fn)
+            ######################################
+            ######### TRAINING PREDICTION ########
+            ######################################
+            train_pred_input_fn = run_classifier.input_fn_builder(
+                features=train_features,
+                seq_length=MAX_SEQ_LENGTH,
+                is_training=False,
+                drop_remainder=True)
+            predictions = estimator.predict(input_fn=train_pred_input_fn)
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
             predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
             append_to_csv(predictions_output, PREDICTIONS_TRAIN_DIR)
+
 
         #############################
         ######### EVALUATING ########
@@ -505,7 +514,6 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         probabilities = np.array([p['probabilities'] for p in predictions])
         y_pred = np.argmax(probabilities, axis=1)
         y_true = [e.label_id for e in eval_features]
-        label_mapping = dict(zip(range(len(label_list)), label_list))
         scores = performance_metrics(y_true,
                                      y_pred,
                                      label_mapping=label_mapping)
