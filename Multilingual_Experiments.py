@@ -71,7 +71,7 @@ WARMUP_PROPORTION = 0.1
 ##############################
 SAVE_CHECKPOINTS_STEPS = 1000
 SAVE_SUMMARY_STEPS = 500
-USE_TPU = True
+
 NUM_TPU_CORES = 8
 ITERATIONS_PER_LOOP = 1000
 LOWER_CASED = False
@@ -607,8 +607,10 @@ def main(args):
 
     #Initialise the TPUs if they are used
     if args.use_tpu == 1:
+        USE_TPU = True
         tpu_address = tpu_init(args.tpu_ip)
     else:
+        USE_TPU = False
         print("Using GPU")
         tpu_address = None
 
