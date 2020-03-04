@@ -425,11 +425,11 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
                 learning_rate=LEARNING_RATE,
                 num_train_steps=num_train_steps,
                 num_warmup_steps=num_warmup_steps,
-                use_tpu=USE_TPU,
+                use_tpu=use_tpu,
                 use_one_hot_embeddings=True)
 
             estimator = tf.contrib.tpu.TPUEstimator(
-                use_tpu=USE_TPU,
+                use_tpu=use_tpu,
                 model_fn=model_fn,
                 config=get_run_config(temp_output_dir),
                 train_batch_size=TRAIN_BATCH_SIZE,
@@ -607,12 +607,12 @@ def main(args):
 
     #Initialise the TPUs if they are used
     if args.use_tpu == 1:
-        USE_TPU = True
+        use_tpu = True
         tpu_address = tpu_init(args.tpu_ip)
     else:
-        USE_TPU = False
-        print("Using GPU")
+        use_tpu = False
         tpu_address = None
+        print("Using GPU")
 
     for repeat in range(args.repeats):
         run_experiment(args.experiments, tpu_address, repeat+1, args.num_train_steps,
