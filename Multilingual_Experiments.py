@@ -354,6 +354,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
 
+
     print("Getting ready to run the following experiments for " +
           str(repeat) + " repeats: " + str(experiment_list))
 
@@ -400,9 +401,13 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(
                 BERT_MODEL_DIR, 'vocab.txt'),
                                                    do_lower_case=LOWER_CASED)
-
-            tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(
-                tpu_address)
+            
+            
+            if tpu_address:                                       
+                tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(tpu_address)
+            else:
+                tpu_cluster_resolver = None
+                
             processor = vaccineStanceProcessor()
             label_list = processor.get_labels()
             label_mapping = dict(zip(range(len(label_list)), label_list))
@@ -466,7 +471,7 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
                 features=train_features,
                 seq_length=MAX_SEQ_LENGTH,
                 is_training=False,
-                drop_remainder=True)
+                drop_remainder=False)
             predictions = estimator.predict(input_fn=train_pred_input_fn)
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
@@ -562,6 +567,11 @@ def parse_args(args):
                         dest='tpu_ip',
                         default=None,
                         help="IP-address of the TPU")
+    parser.add_argument("-tpu",
+                        "--use_tpu",
+                        dest='use_tpu',
+                        default=1,
+                        help="Use TPU. Set to 1 or 0. If set to false, GPU will be used instead")
     parser.add_argument(
         "-u",
         "--username",
@@ -595,8 +605,12 @@ def parse_args(args):
 def main(args):
     args = parse_args(args)
 
-    #Initialise the TPUs
-    tpu_address = tpu_init(args.tpu_ip)
+    #Initialise the TPUs if they are used
+    if args.use_tpu == 1:
+        tpu_address = tpu_init(args.tpu_ip)
+    else:
+        print("Using GPU")
+        tpu_address = None
 
     for repeat in range(args.repeats):
         run_experiment(args.experiments, tpu_address, repeat+1, args.num_train_steps,
