@@ -22,7 +22,7 @@ if not os.path.exists('bert_repo'):
 else:
     print('** The Bert repository has already been cloned')
 
-if not '/content/bert_repo' in sys.path:
+if not 'bert_repo' in sys.path:
     sys.path += ['bert_repo']
 
 ###################################
@@ -48,13 +48,19 @@ BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'
 BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TRAINING_LOG_FILE = '/home/per/multi-lang-vaccine-sentiment-log/fulltrainlog.csv'
-PREDICTIONS_TRAIN_DIR = '/home/per/multi-lang-vaccine-sentiment-log/predictions_train.csv'
-PREDICTIONS_DEV_DIR = '/home/per/multi-lang-vaccine-sentiment-log/predictions_dev.csv'
-PREDICTIONS_TEST_DIR = '/home/per/multi-lang-vaccine-sentiment-log/predictions_test.csv'
-HIDDEN_STATE_TRAIN_DIR = '/home/per/multi-lang-vaccine-sentiment-log/hidden_state_train.csv'
-HIDDEN_STATE_DEV_DIR = '/home/per/multi-lang-vaccine-sentiment-log/hidden_state_dev.csv'
-HIDDEN_STATE_TEST_DIR = '/home/per/multi-lang-vaccine-sentiment-log/hidden_state_test.csv'
+TRAINING_LOG_FILE = 'log_csv/fulltrainlog.csv'
+PREDICTIONS_TRAIN_DIR = 'log_json/predictions_train.csv'
+PREDICTIONS_DEV_DIR = 'log_json/predictions_dev.csv'
+PREDICTIONS_TEST_DIR = 'log_json/predictions_test.csv'
+HIDDEN_STATE_TRAIN_DIR = 'log_json/hidden_state_train.csv'
+HIDDEN_STATE_DEV_DIR = 'log_json/hidden_state_dev.csv'
+HIDDEN_STATE_TEST_DIR = 'log_json/hidden_state_test.csv'
+
+if not os.path.exists('log_csv'):
+    os.makedirs('log_csv')
+
+if not os.path.exists('log_json'):
+    os.makedirs('log_json')
 
 ##############################
 ####### HYPERPARAMETERS ######
@@ -75,7 +81,6 @@ SAVE_SUMMARY_STEPS = 500
 NUM_TPU_CORES = 8
 ITERATIONS_PER_LOOP = 1000
 LOWER_CASED = False
-
 
 ##############################
 ########### FUNCTIONS ########
@@ -349,7 +354,7 @@ experiment_definitions = {
 ###########################
 
 
-def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
+def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, username,
                    comment):
     #Interpret the input, and get all the experiments that should run into a list
     experiment_list = [x.strip() for x in experiments.split(',')]
@@ -376,8 +381,10 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
         print("***** Starting Experiment " + exp_nr + " *******")
         print("***** "+experiment_definitions[exp_nr]['name']+" ******")
         print("***********************************************")
+
         #Get a unique ID for every experiment run
         experiment_id = str(uuid.uuid4())
+
         ###########################
         ######### TRAINING ########
         ###########################
@@ -392,10 +399,8 @@ def run_experiment(experiments, tpu_address, repeat, num_train_steps, username,
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,experiment_id)
 
-            print("***** Setting temporary dir " + temp_output_dir + "**")
-
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
-
+            print("***** Setting temporary dir " + temp_output_dir + "**")
             print("***** Train started in " + temp_output_dir + "**")
 
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(
@@ -609,13 +614,14 @@ def main(args):
     if args.use_tpu == 1:
         use_tpu = True
         tpu_address = tpu_init(args.tpu_ip)
+        print("Using TPU")
     else:
         use_tpu = False
         tpu_address = None
         print("Using GPU")
 
     for repeat in range(args.repeats):
-        run_experiment(args.experiments, tpu_address, repeat+1, args.num_train_steps,
+        run_experiment(args.experiments, use_tpu, tpu_address, repeat+1, args.num_train_steps,
                        args.username, args.comment)
         print("*** Completed repeats " + str(repeat + 1))
 
