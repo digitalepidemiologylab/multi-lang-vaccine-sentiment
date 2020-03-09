@@ -482,6 +482,9 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             y_true = [e.label_id for e in train_features]
             predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
 
+
+            print("****train_examples")
+            print(train_examples)
             print("*****train_features")
             #print(train_features.__dict__.keys()
             for e in train_features:
