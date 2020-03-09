@@ -484,8 +484,8 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
 
             print("*****train_features")
             for e in train_features:
-                dir(e)
-                print(e.label_id)
+                e.__dict__.keys()
+                #print(e.label_id)
 
             print("*****predictions_output")
             print(predictions_output)
