@@ -482,8 +482,8 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             y_true = [e.label_id for e in train_features]
             predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
 
-            print("*****y_true")
-            print(y_true)
+            print("*****train_features")
+            print(train_features)
 
             print("*****predictions_output")
             print(predictions_output)
