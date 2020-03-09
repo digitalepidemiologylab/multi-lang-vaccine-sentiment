@@ -480,7 +480,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             predictions = estimator.predict(input_fn=train_pred_input_fn)
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
-            guid = [e['guid'] for e in train_examples]
+            guid = [e.guid] for e in train_examples]
             
             predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
 
