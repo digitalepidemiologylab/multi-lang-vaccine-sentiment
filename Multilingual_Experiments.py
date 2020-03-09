@@ -485,12 +485,12 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             print("*****train_features")
             for e in train_features:
                 dir(e)
-                print(e)
+                print(e.label_id)
 
             print("*****predictions_output")
             print(predictions_output)
 
-
+            sys.exit()
 
             append_to_csv(predictions_output, PREDICTIONS_TRAIN_DIR)
 
