@@ -43,8 +43,12 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
             _compute_performance_metric(sklearn.metrics.f1_score, m, y_true, y_pred)
     return scores
 
-def get_predictions_output(experiment_id, probabilities, y_true, label_mapping=None):
+def get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=None):
     probabilities = np.array(probabilities)
+    
+    #Martin - We need to handle the guid here.... Currently it should have the same order as the probabilities
+    guid = np.array(guid)
+
     output = {'Experiment_Id': experiment_id}
     other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
     for col in other_cols:
