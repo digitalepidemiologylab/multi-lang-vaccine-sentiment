@@ -481,6 +481,15 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
             predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
+
+            print("*****y_true")
+            print(y_true)
+
+            print("*****predictions_output")
+            print(predictions_output)
+
+
+
             append_to_csv(predictions_output, PREDICTIONS_TRAIN_DIR)
 
 
