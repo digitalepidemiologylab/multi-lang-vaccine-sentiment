@@ -1,6 +1,6 @@
 import numpy as np
 import sklearn.metrics
-import os, csv
+import os, csv, json
 
 #Define some custom functions
 def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapping=None):
@@ -56,8 +56,6 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, label_map
     
     for g in guid:
         output[g] = []
-        for col in other_cols:
-            output[g][col] = []
     
     for i,g in enumerate(guid):
         sorted_ids = np.argsort(-probabilities[i])
@@ -85,3 +83,9 @@ def append_to_csv(data, f_name):
         output_writer.writerow(data)
         print("Wrote log to csv-file")
 
+def save_to_json(data, f_name):
+    with open(f_name, mode='w') as f:
+
+        output_writer = _get_dict_writer(f)
+        output_writer.writerow(data)
+        print("Wrote log to json-file")
