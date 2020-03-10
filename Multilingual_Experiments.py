@@ -49,7 +49,7 @@ BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
 LOG_CSV_DIR = 'log_csv/'
-PREDICTIONS_JSON_DIR = 'pred_json/'
+PREDICTIONS_JSON_DIR = 'predictions_json/'
 HIDDEN_STATE_JSON_DIR = 'hidden_state_json/'
 
 
@@ -484,7 +484,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             guid = [e.guid for e in train_examples]
             
             predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-            save_to_json = (data,os.path.join(PREDICTIONS_JSON_DIR,'train_'+experiment_id+'.json'))
+            save_to_json = (predictions_output ,os.path.join(PREDICTIONS_JSON_DIR,'train_'+experiment_id+'.json'))
 
 
         #############################
@@ -539,7 +539,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
 
         # write full dev prediction output
         predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-        save_to_json = (data,os.path.join(PREDICTIONS_JSON_DIR,'dev_'+experiment_id+'.json'))
+        save_to_json = (predictions_output, os.path.join(PREDICTIONS_JSON_DIR,'dev_'+experiment_id+'.json'))
 
         # Write log to Training Log File
         data = {
