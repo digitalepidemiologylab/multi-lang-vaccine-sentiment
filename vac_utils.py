@@ -46,24 +46,30 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
 def get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=None):
     probabilities = np.array(probabilities)
     guid = np.array(guid)
+    
+    assert len(probabilities) == len(y_true)
+    assert len(guid) == len(y_true)
+    
 
     output = {'Experiment_Id': experiment_id}
-    other_cols = ['guid','prediction', 'predictions', 'y_true', 'probability', 'probabilities']
-    for col in other_cols:
-        output[col] = []
-    assert len(probabilities) == len(y_true)
-    for i in range(len(probabilities)):
+    other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
+    
+    for g in guid:
+        output[g] = []
+        for col in other_cols:
+            output[g][col] = []
+    
+    for i,g in enumerate(guid):
         sorted_ids = np.argsort(-probabilities[i])
         if label_mapping is None:
             labels = sorted_ids
         else:
             labels = [label_mapping[s] for s in sorted_ids]
-        output['guid'].append(guid[i])
-        output['prediction'].append(labels[0])
-        output['predictions'].append(labels)
-        output['y_true'].append(y_true[i])
-        output['probability'].append(probabilities[i][sorted_ids][0])
-        output['probabilities'].append(probabilities[i][sorted_ids])
+        output[g]['prediction'].append(labels[0])
+        output[g]['predictions'].append(labels)
+        output[g]['probability'].append(probabilities[i][sorted_ids][0])
+        output[g]['probabilities'].append(probabilities[i][sorted_ids])
+        output[g]['y_true'].append(label_mapping[y_true[i]])
     return output
 
 def append_to_csv(data, f_name):
