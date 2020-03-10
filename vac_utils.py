@@ -65,11 +65,11 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, label_map
             labels = sorted_ids
         else:
             labels = [label_mapping[s] for s in sorted_ids]
-        output[g]['prediction'].append(labels[0])
-        output[g]['predictions'].append(labels)
-        output[g]['probability'].append(probabilities[i][sorted_ids][0])
-        output[g]['probabilities'].append(probabilities[i][sorted_ids])
-        output[g]['y_true'].append(label_mapping[y_true[i]])
+        output[g].append({'prediction' : labels[0]})
+        output[g].append({'predictions' : labels})
+        output[g].append({'probability' : probabilities[i][sorted_ids][0]})
+        output[g].append({'probabilities' : probabilities[i][sorted_ids]})
+        output[g].append({'y_true' : label_mapping[y_true[i]})
     return output
 
 def append_to_csv(data, f_name):
