@@ -484,6 +484,9 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             guid = [e.guid for e in train_examples]
             
             predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
+            import pprint
+            pprint.pprint(predictions_output)
+            
             save_to_json(predictions_output ,os.path.join(PREDICTIONS_JSON_DIR,'train_'+experiment_id+'.json'))
 
 
