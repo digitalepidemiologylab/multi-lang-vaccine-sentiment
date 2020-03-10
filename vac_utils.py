@@ -52,7 +52,7 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, label_map
     
 
     output = {'Experiment_Id': experiment_id}
-    other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
+    #other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
     
     for g in guid:
         output[g] = []
