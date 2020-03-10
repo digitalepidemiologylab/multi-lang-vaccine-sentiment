@@ -66,7 +66,7 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, label_map
         output[g].append({'prediction' : labels[0]})
         output[g].append({'predictions' : labels})
         output[g].append({'probability' : probabilities[i][sorted_ids][0]})
-        #output[g].append({'probabilities' : probabilities[i][sorted_ids]})
+        output[g].append({'probabilities' : probabilities[i][sorted_ids]})
         output[g].append({'y_true' : label_mapping[y_true[i]]})
     return output
 
@@ -84,9 +84,6 @@ def append_to_csv(data, f_name):
         print("Wrote log to csv-file")
 
 def save_to_json(data, f_name):
-    import pprint
-    pprint.pprint(data)
-    data = np.array(data)
     print("**************")     
     pprint.pprint(data)
     with open(f_name, mode='w', encoding='utf-8') as f:
