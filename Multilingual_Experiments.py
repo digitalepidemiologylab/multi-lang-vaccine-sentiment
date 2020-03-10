@@ -30,7 +30,7 @@ if not 'bert_repo' in sys.path:
 ###################################
 from google.colab import auth
 from google.colab import drive
-from vac_utils import performance_metrics, get_predictions_output, append_to_csv
+from vac_utils import performance_metrics, get_predictions_output, append_to_csv, save_to_json
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
@@ -48,19 +48,18 @@ BERT_MODEL_DIR = 'gs://perepublic/multi_cased_L-12_H-768_A-12/'
 BERT_MODEL_NAME = 'bert_model.ckpt'
 BERT_MODEL_FILE = os.path.join(BERT_MODEL_DIR, BERT_MODEL_NAME)
 TEMP_OUTPUT_BASEDIR = 'gs://perepublic/finetuned_models/'
-TRAINING_LOG_FILE = 'log_csv/fulltrainlog.csv'
-PREDICTIONS_TRAIN_DIR = 'log_json/predictions_train.csv'
-PREDICTIONS_DEV_DIR = 'log_json/predictions_dev.csv'
-PREDICTIONS_TEST_DIR = 'log_json/predictions_test.csv'
-HIDDEN_STATE_TRAIN_DIR = 'log_json/hidden_state_train.csv'
-HIDDEN_STATE_DEV_DIR = 'log_json/hidden_state_dev.csv'
-HIDDEN_STATE_TEST_DIR = 'log_json/hidden_state_test.csv'
+LOG_CSV_DIR = 'log_csv/'
+PREDICTIONS_JSON_DIR = 'pred_json/'
+HIDDEN_STATE_JSON_DIR = 'hidden_state_json/'
 
-if not os.path.exists('log_csv'):
-    os.makedirs('log_csv')
 
-if not os.path.exists('log_json'):
-    os.makedirs('log_json')
+logdirs = [LOG_CSV_DIR, PREDICTIONS_JSON_DIR, HIDDEN_STATE_JSON_DIR]
+
+for d in logdirs:
+    if not os.path.exists(d):
+        os.makedirs(d)
+
+
 
 ##############################
 ####### HYPERPARAMETERS ######
@@ -485,8 +484,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             guid = [e.guid for e in train_examples]
             
             predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-
-            append_to_csv(predictions_output, PREDICTIONS_TRAIN_DIR)
+            save_to_json = (data,os.path.join(PREDICTIONS_JSON_DIR,'train_'+experiment_id+'.json'))
 
 
         #############################
@@ -541,10 +539,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
 
         # write full dev prediction output
         predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-        print(predictions_output)
-        sys.exit
-        
-        append_to_csv(predictions_output, PREDICTIONS_DEV_DIR)
+        save_to_json = (data,os.path.join(PREDICTIONS_JSON_DIR,'dev_'+experiment_id+'.json'))
 
         # Write log to Training Log File
         data = {
@@ -563,7 +558,8 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             'Comment': comment,
             **scores
         }
-        append_to_csv(data, TRAINING_LOG_FILE)
+
+        append_to_csv(data, os.path.join(LOG_CSV_DIR,'fulltrainlog.csv'))
         print("***** Completed Experiment " + exp_nr + " *******")
 
     print("***** Completed all experiments in " + str(repeat) +
