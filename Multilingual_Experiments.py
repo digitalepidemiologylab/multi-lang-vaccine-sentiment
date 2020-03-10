@@ -484,31 +484,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
 
             guid = [e.guid for e in train_examples]
             
-            predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
-
-
-            print("****train_examples")
-            print(guid)
-            sys.exit()
-            #for e in train_examples:
-            #    print(e['guid'])
-
-            #    sys.exit()
-            print("*****train_features")
-            #print(train_features.__dict__.keys()
-            for e in train_features:
-                print(e.input_ids)
-                print(e.input_mask)
-                print(e.segment_ids)
-                print(e.label_id)
-                print(e.is_real_example)
-                sys.exit()
-                #print(e.label_id)
-
-            print("*****predictions_output")
-            print(predictions_output)
-
-            sys.exit()
+            predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
 
             append_to_csv(predictions_output, PREDICTIONS_TRAIN_DIR)
 
@@ -553,6 +529,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
         probabilities = np.array([p['probabilities'] for p in predictions])
         y_pred = np.argmax(probabilities, axis=1)
         y_true = [e.label_id for e in eval_features]
+        guid = [e.guid for e in eval_examples]
         scores = performance_metrics(y_true,
                                      y_pred,
                                      label_mapping=label_mapping)
@@ -563,7 +540,10 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
                      datetime.datetime.now()))
 
         # write full dev prediction output
-        predictions_output = get_predictions_output(experiment_id, probabilities, y_true, label_mapping=label_mapping)
+        predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
+        print(predictions_output)
+        sys.exit
+        
         append_to_csv(predictions_output, PREDICTIONS_DEV_DIR)
 
         # Write log to Training Log File

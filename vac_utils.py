@@ -45,12 +45,10 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
 
 def get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=None):
     probabilities = np.array(probabilities)
-    
-    #Martin - We need to handle the guid here.... Currently it should have the same order as the probabilities
     guid = np.array(guid)
 
     output = {'Experiment_Id': experiment_id}
-    other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
+    other_cols = ['guid','prediction', 'predictions', 'y_true', 'probability', 'probabilities']
     for col in other_cols:
         output[col] = []
     assert len(probabilities) == len(y_true)
@@ -60,6 +58,7 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, label_map
             labels = sorted_ids
         else:
             labels = [label_mapping[s] for s in sorted_ids]
+        output['guid'].append(guid[i])
         output['prediction'].append(labels[0])
         output['predictions'].append(labels)
         output['y_true'].append(y_true[i])
