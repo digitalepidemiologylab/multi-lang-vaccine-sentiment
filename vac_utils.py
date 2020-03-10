@@ -84,7 +84,7 @@ def append_to_csv(data, f_name):
         print("Wrote log to csv-file")
 
 def save_to_json(data, f_name):
+    data = np.array(data)
     with open(f_name, mode='w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)    
     print("Wrote log to json-file")
-    
