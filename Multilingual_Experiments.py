@@ -478,9 +478,9 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
                 is_training=False,
                 drop_remainder=False)
 
+            print("****")
             print(repr(estimator.model_fn))
             print(repr(estimator.model_fn['features']))
-
             sys.exit()
 
             predictions = estimator.predict(input_fn=train_pred_input_fn)
