@@ -477,15 +477,13 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
                 seq_length=MAX_SEQ_LENGTH,
                 is_training=False,
                 drop_remainder=False)
-            predictions = estimator.predict(input_fn=train_pred_input_fn)
 
-            for p in predictions:
-                print(repr(p))
-                print(str(p))
-                sys.exit()
+            print(repr(estimator))
+            print(str(estimator))
+            sys.exit()
 
             
-
+            predictions = estimator.predict(input_fn=train_pred_input_fn)
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
 
