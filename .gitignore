@@ -130,6 +130,9 @@ dmypy.json
 
 **/*.swo
 **/*.swp
+.DS_Store
 
 data
 bert_repo
+log_csv
+predictions_json

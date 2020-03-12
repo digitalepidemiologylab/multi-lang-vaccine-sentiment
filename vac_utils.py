@@ -1,6 +1,12 @@
 import numpy as np
 import sklearn.metrics
-import os, csv, json
+import os
+import csv
+import json
+import logging
+import time
+
+logger = logging.getLogger(__name__)
 
 #Define some custom functions
 def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapping=None):
@@ -43,31 +49,25 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
             _compute_performance_metric(sklearn.metrics.f1_score, m, y_true, y_pred)
     return scores
 
-def get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=None):
+def get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=None, dataset='train'):
     probabilities = np.array(probabilities)
     guid = np.array(guid)
-    
     assert len(probabilities) == len(y_true)
     assert len(guid) == len(y_true)
-    
-
-    output = {'Experiment_Id': experiment_id}
-    #other_cols = ['prediction', 'predictions', 'y_true', 'probability', 'probabilities']
-    
+    output = {'Experiment_Id': experiment_id, 'dataset': dataset, 'created_at': time.time(), 'guid': {}}
     for g in guid:
-        output[g] = []
-    
-    for i,g in enumerate(guid):
+        output['guid'][g] = []
+    for i, g in enumerate(guid):
         sorted_ids = np.argsort(-probabilities[i])
         if label_mapping is None:
             labels = sorted_ids
         else:
             labels = [label_mapping[s] for s in sorted_ids]
-        output[g].append({'prediction' : labels[0]})
-        output[g].append({'predictions' : labels})
-        output[g].append({'probability' : probabilities[i][sorted_ids][0]})
-        output[g].append({'probabilities' : probabilities[i][sorted_ids]})
-        output[g].append({'y_true' : label_mapping[y_true[i]]})
+        output['guid'][g].append({'prediction' : labels[0]})
+        output['guid'][g].append({'predictions' : labels})
+        output['guid'][g].append({'probability' : probabilities[i][sorted_ids][0]})
+        output['guid'][g].append({'probabilities' : probabilities[i][sorted_ids].tolist()})
+        output['guid'][g].append({'y_true' : label_mapping[y_true[i]]})
     return output
 
 def append_to_csv(data, f_name):
@@ -81,10 +81,21 @@ def append_to_csv(data, f_name):
     with open(f_name, mode='a+') as f:
         output_writer = _get_dict_writer(f)
         output_writer.writerow(data)
-        print("Wrote log to csv-file")
+    logger.info(f'Wrote log to csv {f_name}')
 
 def save_to_json(data, f_name):
-    data = np.array(data)
-    with open(f_name, mode='w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)    
-    print("Wrote log to json-file")
+    with open(f_name, mode='w') as f:
+        json.dump(data, f, cls=JSONEncoder, indent=4)    
+    logger.info(f'Wrote log to json file {f_name}')
+
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(MyEncoder, self).default(obj)

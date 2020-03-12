@@ -4,7 +4,7 @@
 import sys, os, json, csv, datetime, pprint, uuid, time, argparse, logging
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)-5.5s] [%(name)-12.12s]: %(message)s')
-logger = logging.get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 ###################################
 ##### CLONING BERT AND THE DATA ###
@@ -31,17 +31,12 @@ if not 'bert_repo' in sys.path:
 ###################################
 ##### IMPORT REMAINING MODULES ####
 ###################################
-from google.colab import auth
-from google.colab import drive
 from vac_utils import performance_metrics, get_predictions_output, append_to_csv, save_to_json
 import tensorflow as tf
-import tensorflow_hub as hub
 import numpy as np
-import sklearn.metrics
 import modeling
 import optimization
 import run_classifier
-import run_classifier_with_tfhub
 import tokenization
 
 ##############################
@@ -66,9 +61,11 @@ for d in logdirs:
 ##############################
 LEARNING_RATE = 2e-5
 MAX_SEQ_LENGTH = 128
-TRAIN_BATCH_SIZE = 64
+# TRAIN_BATCH_SIZE = 64
+TRAIN_BATCH_SIZE = 8
 EVAL_BATCH_SIZE = 8
-PREDICT_BATCH_SIZE = 64
+# PREDICT_BATCH_SIZE = 64
+PREDICT_BATCH_SIZE = 8
 WARMUP_PROPORTION = 0.1
 
 ##############################
@@ -78,7 +75,8 @@ SAVE_CHECKPOINTS_STEPS = 1000
 SAVE_SUMMARY_STEPS = 500
 
 NUM_TPU_CORES = 8
-ITERATIONS_PER_LOOP = 1000
+# ITERATIONS_PER_LOOP = 1000
+ITERATIONS_PER_LOOP = 10
 LOWER_CASED = False
 
 ##############################
@@ -86,6 +84,7 @@ LOWER_CASED = False
 ##############################
 def tpu_init(ip):
     #Set up the TPU
+    from google.colab import auth
     auth.authenticate_user()
     tpu_address = 'grpc://' + str(ip) + ':8470'
 
@@ -471,14 +470,9 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             predictions = estimator.predict(input_fn=train_pred_input_fn)
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
-
             guid = [e.guid for e in train_examples]
-
             predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-            import pdb; pdb.set_trace()
-
-            save_to_json(predictions_output ,os.path.join(PREDICTIONS_JSON_DIR,'train_'+experiment_id+'.json'))
-
+            save_to_json(predictions_output ,os.path.join(PREDICTIONS_JSON_DIR, f'train_{experiment_id}.json'), dataset='train')
 
         #############################
         ######### EVALUATING ########
@@ -532,7 +526,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
 
         # write full dev prediction output
         predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-        save_to_json(predictions_output, os.path.join(PREDICTIONS_JSON_DIR,'dev_'+experiment_id+'.json'))
+        save_to_json(predictions_output, os.path.join(PREDICTIONS_JSON_DIR, f'dev_{experiment_id}.json'), dataset='dev')
 
         # Write log to Training Log File
         data = {
@@ -571,7 +565,7 @@ def parse_args(args):
     parser.add_argument("--use_tpu",
                         dest='use_tpu',
                         action='store_true',
-                        default=False
+                        default=False,
                         help='Use TPU. Set to 1 or 0. If set to false, GPU will be used instead')
     parser.add_argument(
         '-u',
@@ -589,7 +583,6 @@ def parse_args(args):
         '--experiments',
         nargs='+',
         choices=experiment_definitions.keys(),
-        type='str',
         help='Experiment number',
         default=['1'])
     parser.add_argument(
