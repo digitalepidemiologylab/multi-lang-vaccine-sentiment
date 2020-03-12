@@ -355,11 +355,7 @@ experiment_definitions = {
 
 def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, username,
                    comment):
-    #Interpret the input, and get all the experiments that should run into a list
-    experiment_list = [x.strip() for x in experiments.split(',')]
-
-
-    logger.info(f'Getting ready to run the following experiments for {repeat} repeats: {experiment_list}')
+    logger.info(f'Getting ready to run the following experiments for {repeat} repeats: {experiments}')
 
     def get_run_config(output_dir):
         return tf.contrib.tpu.RunConfig(
@@ -375,7 +371,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
     last_completed_train = ""
     completed_train_dirs = []
 
-    for exp_nr in experiment_list:
+    for exp_nr in experiments:
         logger.info(f"***** Starting Experiment {exp_nr} *******")
         logger.info(f"***** {experiment_definitions[exp_nr]['name']} ******")
         logger.info("***********************************************")
@@ -568,45 +564,46 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
 def parse_args(args):
     # Parse commandline
     parser = argparse.ArgumentParser()
-    parser.add_argument("-ip",
-                        "--tpu_ip",
+    parser.add_argument("--tpu_ip",
                         dest='tpu_ip',
                         default=None,
                         help="IP-address of the TPU")
-    parser.add_argument("-tpu",
-                        "--use_tpu",
+    parser.add_argument("--use_tpu",
                         dest='use_tpu',
-                        default=1,
-                        help="Use TPU. Set to 1 or 0. If set to false, GPU will be used instead")
+                        action='store_true',
+                        default=False
+                        help='Use TPU. Set to 1 or 0. If set to false, GPU will be used instead')
     parser.add_argument(
-        "-u",
-        "--username",
-        help=
-        "Optional. Username is used in the directory name and in the logfile",
-        default="Anonymous")
+        '-u',
+        '--username',
+        help='Optional. Username is used in the directory name and in the logfile',
+        default='Anonymous')
     parser.add_argument(
-        "-r",
-        "--repeats",
-        help="Number of times the script should run. Default is 1",
+        '-r',
+        '--repeats',
+        help='Number of times the script should run. Default is 1',
         default=1,
         type=int)
     parser.add_argument(
-        "-e",
-        "--experiments",
-        help=
-        "Experiment number as string! Use commas like \"2,3,4\" to run multiple experiments. Runs experiment \"1\" by default",
-        default="1")
-    parser.add_argument("-n","--num_train_steps",
-                        help="Number of train steps. Default is 100",
-                        default=100,
-                        type=int)
+        '-e',
+        '--experiments',
+        nargs='+',
+        choices=experiment_definitions.keys(),
+        type='str',
+        help='Experiment number',
+        default=['1'])
     parser.add_argument(
-        "--comment",
-        help="Optional. Add a Comment to the logfile for internal reference.",
-        default="No Comment")
+            '-n',
+            '--num_train_steps',
+            help='Number of train steps. Default is 100',
+            default=100,
+            type=int)
+    parser.add_argument(
+        '--comment',
+        help='Optional. Add a Comment to the logfile for internal reference.',
+        default='No Comment')
     args = parser.parse_args()
     return args
-
 
 def main(args):
     args = parse_args(args)
@@ -629,4 +626,3 @@ def main(args):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
