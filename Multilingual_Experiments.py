@@ -1,7 +1,10 @@
 ################################
 ####### IMPORT MODULES #########
 ################################
-import sys, os, json, csv, datetime, pprint, uuid, time, argparse
+import sys, os, json, csv, datetime, pprint, uuid, time, argparse, logging
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s [%(levelname)-5.5s] [%(name)-12.12s]: %(message)s')
+logger = logging.get_logger(__name__)
 
 ###################################
 ##### CLONING BERT AND THE DATA ###
@@ -12,7 +15,7 @@ if not os.path.exists('data'):
     os.makedirs('data')
     os.system("gsutil -m cp -r gs://perepublic/EPFL_multilang/data/ .")
 else:
-    print('** All training files has already been copied to data')
+    logger.info('** All training files has already been copied to data')
 
 # Clone Bert
 if not os.path.exists('bert_repo'):
@@ -20,7 +23,7 @@ if not os.path.exists('bert_repo'):
         "test -d bert_repo || git clone https://github.com/google-research/bert bert_repo"
     )
 else:
-    print('** The Bert repository has already been cloned')
+    logger.info('** The Bert repository has already been cloned')
 
 if not 'bert_repo' in sys.path:
     sys.path += ['bert_repo']
@@ -52,14 +55,11 @@ LOG_CSV_DIR = 'log_csv/'
 PREDICTIONS_JSON_DIR = 'predictions_json/'
 HIDDEN_STATE_JSON_DIR = 'hidden_state_json/'
 
-
 logdirs = [LOG_CSV_DIR, PREDICTIONS_JSON_DIR, HIDDEN_STATE_JSON_DIR]
 
 for d in logdirs:
     if not os.path.exists(d):
         os.makedirs(d)
-
-
 
 ##############################
 ####### HYPERPARAMETERS ######
@@ -90,10 +90,9 @@ def tpu_init(ip):
     tpu_address = 'grpc://' + str(ip) + ':8470'
 
     with tf.Session(tpu_address) as session:
-        print('TPU devices:')
+        logger.info('TPU devices:')
         pprint.pprint(session.list_devices())
-    print('TPU address is active on', tpu_address)
-
+    logger.info(f'TPU address is active on {tpu_address}')
     return tpu_address
 
 
@@ -360,8 +359,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
     experiment_list = [x.strip() for x in experiments.split(',')]
 
 
-    print("Getting ready to run the following experiments for " +
-          str(repeat) + " repeats: " + str(experiment_list))
+    logger.info(f'Getting ready to run the following experiments for {repeat} repeats: {experiment_list}')
 
     def get_run_config(output_dir):
         return tf.contrib.tpu.RunConfig(
@@ -378,9 +376,9 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
     completed_train_dirs = []
 
     for exp_nr in experiment_list:
-        print("***** Starting Experiment " + exp_nr + " *******")
-        print("***** "+experiment_definitions[exp_nr]['name']+" ******")
-        print("***********************************************")
+        logger.info(f"***** Starting Experiment {exp_nr} *******")
+        logger.info(f"***** {experiment_definitions[exp_nr]['name']} ******")
+        logger.info("***********************************************")
 
         #Get a unique ID for every experiment run
         experiment_id = str(uuid.uuid4())
@@ -393,26 +391,26 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
         train_annot_dataset = experiment_definitions[exp_nr][
             "train_annot_dataset"]
 
-        
+
         if train_annot_dataset != last_completed_train:
             #Set a fresh new output directory every time training starts, and set the cache to this directory
             temp_output_dir = os.path.join(
                 TEMP_OUTPUT_BASEDIR,experiment_id)
 
             os.environ['TFHUB_CACHE_DIR'] = temp_output_dir
-            print("***** Setting temporary dir " + temp_output_dir + "**")
-            print("***** Train started in " + temp_output_dir + "**")
+            logger.info(f"***** Setting temporary dir {temp_output_dir} **")
+            logger.info(f"***** Train started in {temp_output_dir} **")
 
             tokenizer = tokenization.FullTokenizer(vocab_file=os.path.join(
                 BERT_MODEL_DIR, 'vocab.txt'),
                                                    do_lower_case=LOWER_CASED)
-            
-            
-            if tpu_address:                                       
+
+
+            if tpu_address:
                 tpu_cluster_resolver = tf.contrib.cluster_resolver.TPUClusterResolver(tpu_address)
             else:
                 tpu_cluster_resolver = None
-                
+
             processor = vaccineStanceProcessor()
             label_list = processor.get_labels()
             label_mapping = dict(zip(range(len(label_list)), label_list))
@@ -445,15 +443,12 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             train_features = run_classifier.convert_examples_to_features(
                 train_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
 
-            print(
-                '***** Fine tuning BERT base model normally takes a few minutes. Please wait...'
-            )
-            print('***** Started training using {} at {} *****'.format(
-                train_annot_dataset, datetime.datetime.now()))
-            print('  Num examples = {}'.format(len(train_examples)))
-            print('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
-            print('  Train steps = {}'.format(num_train_steps))
-            print('  Number of training steps = {}'.format(num_train_steps))
+            logger.info('***** Fine tuning BERT base model normally takes a few minutes. Please wait...')
+            logger.info('***** Started training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
+            logger.info('  Num examples = {}'.format(len(train_examples)))
+            logger.info('  Batch size = {}'.format(TRAIN_BATCH_SIZE))
+            logger.info('  Train steps = {}'.format(num_train_steps))
+            logger.info('  Number of training steps = {}'.format(num_train_steps))
 
             tf.logging.info('  Num steps = %d', num_train_steps)
             train_input_fn = run_classifier.input_fn_builder(
@@ -463,8 +458,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
                 drop_remainder=True)
 
             estimator.train(input_fn=train_input_fn, max_steps=num_train_steps)
-            print('***** Finished training using {} at {} *****'.format(
-                train_annot_dataset, datetime.datetime.now()))
+            logger.info('***** Finished training using {} at {} *****'.format(train_annot_dataset, datetime.datetime.now()))
 
             last_completed_train = train_annot_dataset
             completed_train_dirs.append(temp_output_dir)
@@ -483,7 +477,7 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             y_true = [e.label_id for e in train_features]
 
             guid = [e.guid for e in train_examples]
-            
+
             predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
             import pdb; pdb.set_trace()
 
@@ -500,10 +494,10 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             os.path.join('data', eval_annot_dataset))
         eval_features = run_classifier.convert_examples_to_features(
             eval_examples, label_list, MAX_SEQ_LENGTH, tokenizer)
-        print('***** Started evaluation of {} at {} *****'.format(
+        logger.info('***** Started evaluation of {} at {} *****'.format(
             experiment_definitions[exp_nr]["name"], datetime.datetime.now()))
-        print('Num examples = {}'.format(len(eval_examples)))
-        print('Batch size = {}'.format(EVAL_BATCH_SIZE))
+        logger.info('Num examples = {}'.format(len(eval_examples)))
+        logger.info('Batch size = {}'.format(EVAL_BATCH_SIZE))
 
         # Eval will be slightly WRONG on the TPU because it will truncate the last batch.
         eval_steps = int(len(eval_examples) / EVAL_BATCH_SIZE)
@@ -514,16 +508,16 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             drop_remainder=True)
         result = estimator.evaluate(input_fn=eval_input_fn, steps=eval_steps)
 
-        print(
+        logger.info(
             '***** Finished first half of evaluation of {} at {} *****'.format(
                 experiment_definitions[exp_nr]["name"],
                 datetime.datetime.now()))
 
         output_eval_file = os.path.join(temp_output_dir, 'eval_results.txt')
         with tf.gfile.GFile(output_eval_file, 'w') as writer:
-            print('***** Eval results *****')
+            logger.info('***** Eval results *****')
             for key in sorted(result.keys()):
-                print('  {} = {}'.format(key, str(result[key])))
+                logger.info('  {} = {}'.format(key, str(result[key])))
                 writer.write('%s = %s\n' % (key, str(result[key])))
 
         predictions = estimator.predict(eval_input_fn)
@@ -534,9 +528,9 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
         scores = performance_metrics(y_true,
                                      y_pred,
                                      label_mapping=label_mapping)
-        print('Final scores:')
-        print(scores)
-        print('***** Finished second half of evaluation of {} at {} *****'.
+        logger.info('Final scores:')
+        logger.info(scores)
+        logger.info('***** Finished second half of evaluation of {} at {} *****'.
               format(experiment_definitions[exp_nr]["name"],
                      datetime.datetime.now()))
 
@@ -563,13 +557,12 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
         }
 
         append_to_csv(data, os.path.join(LOG_CSV_DIR,'fulltrainlog.csv'))
-        print("***** Completed Experiment " + exp_nr + " *******")
+        logger.info(f"***** Completed Experiment {exp_nr} *******")
 
-    print("***** Completed all experiments in " + str(repeat) +
-          "repeats. We should now clean up all remaining files *****")
+    logger.info(f"***** Completed all experiments in {repeat} repeats. We should now clean up all remaining files *****")
     for c in completed_train_dirs:
-        print("Deleting these directories: ")
-        print("gsutil -m rm -r " + c)
+        logger.info("Deleting these directories: ")
+        logger.info("gsutil -m rm -r " + c)
         os.system("gsutil -m rm -r " + c)
 
 def parse_args(args):
@@ -622,16 +615,16 @@ def main(args):
     if args.use_tpu == 1:
         use_tpu = True
         tpu_address = tpu_init(args.tpu_ip)
-        print("Using TPU")
+        logger.info("Using TPU")
     else:
         use_tpu = False
         tpu_address = None
-        print("Using GPU")
+        logger.info("Using GPU")
 
     for repeat in range(args.repeats):
         run_experiment(args.experiments, use_tpu, tpu_address, repeat+1, args.num_train_steps,
                        args.username, args.comment)
-        print("*** Completed repeats " + str(repeat + 1))
+        logger.info(f'*** Completed repeats {repeat + 1}')
 
 
 if __name__ == "__main__":
