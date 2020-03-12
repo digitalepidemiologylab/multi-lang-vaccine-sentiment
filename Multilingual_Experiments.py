@@ -471,8 +471,8 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
             probabilities = np.array([p['probabilities'] for p in predictions])
             y_true = [e.label_id for e in train_features]
             guid = [e.guid for e in train_examples]
-            predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-            save_to_json(predictions_output ,os.path.join(PREDICTIONS_JSON_DIR, f'train_{experiment_id}.json'), dataset='train')
+            predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping, dataset='train')
+            save_to_json(predictions_output ,os.path.join(PREDICTIONS_JSON_DIR, f'train_{experiment_id}.json'))
 
         #############################
         ######### EVALUATING ########
@@ -525,8 +525,8 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
                      datetime.datetime.now()))
 
         # write full dev prediction output
-        predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping)
-        save_to_json(predictions_output, os.path.join(PREDICTIONS_JSON_DIR, f'dev_{experiment_id}.json'), dataset='dev')
+        predictions_output = get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=label_mapping, dataset='dev')
+        save_to_json(predictions_output, os.path.join(PREDICTIONS_JSON_DIR, f'dev_{experiment_id}.json'))
 
         # Write log to Training Log File
         data = {
