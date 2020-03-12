@@ -128,5 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+**/*.swo
+**/*.swp
+
 data
 bert_repo
