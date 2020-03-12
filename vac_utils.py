@@ -88,7 +88,6 @@ def save_to_json(data, f_name):
         json.dump(data, f, cls=JSONEncoder, indent=4)    
     logger.info(f'Wrote log to json file {f_name}')
 
-
 class JSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):

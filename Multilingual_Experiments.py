@@ -367,6 +367,20 @@ def run_experiment(experiments, use_tpu, tpu_address, repeat, num_train_steps, u
                 per_host_input_for_training=tf.contrib.tpu.InputPipelineConfig.
                 PER_HOST_V2))
 
+    def parse_experiments_argument(experiments):
+        """Returns list of experiments from comma-separated string as list"""
+        exp_list = []
+        for part in experiments.split(','):
+            if '-' in part:
+                a, b = part.split('-')
+                a, b = int(a), int(b)
+                exp_list.extend(range(a, b + 1))
+            else:
+                exp_list.append(part)
+        exp_list = [str(s) for s in exp_list]
+        return exp_list
+
+    experiments = parse_experiments_argument(experiments)
     last_completed_train = ""
     completed_train_dirs = []
 
@@ -581,10 +595,9 @@ def parse_args(args):
     parser.add_argument(
         '-e',
         '--experiments',
-        nargs='+',
-        choices=experiment_definitions.keys(),
-        help='Experiment number',
-        default=['1'])
+        type=str,
+        help='Experiment numbers to run. Use , to separate individual runs or - to run a sequence of runs.',
+        default='1')
     parser.add_argument(
             '-n',
             '--num_train_steps',
