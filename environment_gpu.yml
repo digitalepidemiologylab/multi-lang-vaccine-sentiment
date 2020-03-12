@@ -1,0 +1,11 @@
+name: multi-vax
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.6
+  - pandas==1.0.1
+  - scikit-learn==0.22.2.post1
+  - pip:
+    - tensorflow-gpu==1.14
+    - pytest=5.3.5
