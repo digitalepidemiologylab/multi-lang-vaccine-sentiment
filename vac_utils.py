@@ -49,7 +49,7 @@ def performance_metrics(y_true, y_pred, metrics=None, averaging=None, label_mapp
             _compute_performance_metric(sklearn.metrics.f1_score, m, y_true, y_pred)
     return scores
 
-def get_predictions_output(experiment_id, guid, probabilities, y_true, label_mapping=None, dataset='train'):
+def get_predictions_output(experiment_id, guid, probabilities, y_true, cls_hidden_state=None, label_mapping=None, dataset='train'):
     probabilities = np.array(probabilities)
     guid = np.array(guid)
     assert len(probabilities) == len(y_true)
@@ -68,6 +68,8 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, label_map
         output['guid'][g].append({'probability' : probabilities[i][sorted_ids][0]})
         output['guid'][g].append({'probabilities' : probabilities[i][sorted_ids].tolist()})
         output['guid'][g].append({'y_true' : label_mapping[y_true[i]]})
+        if last_layer is not None:
+            output['guid'][g].append({'cls_hidden_state' : cls_hidden_state[i]})
     return output
 
 def append_to_csv(data, f_name):
