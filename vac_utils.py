@@ -68,7 +68,7 @@ def get_predictions_output(experiment_id, guid, probabilities, y_true, cls_hidde
         output['guid'][g].append({'probability' : probabilities[i][sorted_ids][0]})
         output['guid'][g].append({'probabilities' : probabilities[i][sorted_ids].tolist()})
         output['guid'][g].append({'y_true' : label_mapping[y_true[i]]})
-        if last_layer is not None:
+        if cls_hidden_state is not None:
             output['guid'][g].append({'cls_hidden_state' : cls_hidden_state[i]})
     return output
 
